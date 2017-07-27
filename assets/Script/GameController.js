@@ -74,7 +74,7 @@ cc.Class({
     //码牌-------------------
     CreatCard:function(){
         var x = -450;
-        var y = cc.Canvas.instance.node.height/2 -60;
+        var y = -cc.Canvas.instance.node.height/2 +200;
         var num =40;
         if(!this.isHaveBan) num =36;
 
@@ -129,6 +129,11 @@ cc.Class({
     SetBanker:function(seat){
 
     },
+
+    //等待下注
+    WaitForBet:function(){
+        this.SetTime(10);
+    },
     //下注---------------------
     PlayerBet:function(seat,bet){
 
@@ -140,9 +145,10 @@ cc.Class({
         this._first = first;
 
         this.schedule( function() {               
-          
-            this._cards[this._cp++].emit('deal',{x:this.seat[s-1].x-22,y:this.seat[s-1].y,seat:s});
-            this._cards[this._cp++].emit('deal',{x:this.seat[s-1].x+22,y:this.seat[s-1].y,seat:s});
+            var y = this.seat[s-1].y-110;
+            if(s == this._selfseat) y =this.seat[s-1].y;
+            this._cards[this._cp++].emit('deal',{x:this.seat[s-1].x-22,y:y,seat:s});
+            this._cards[this._cp++].emit('deal',{x:this.seat[s-1].x+22,y:y,seat:s});
             s++;
             if(s>4)s =1;
         }, 0.5, 3, 0);
@@ -236,10 +242,10 @@ cc.Class({
 
     },
     //设置 计时器
-    SetTime:function(seat,timelen){
+    SetTime:function(timelen){
         this.timeprog.progress=0;
 
-        timelen =10;
+      //  timelen =10;
         this.schedule( function() {               
           
           this.timeprog.progress+=1/timelen*0.2;
