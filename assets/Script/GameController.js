@@ -1,3 +1,4 @@
+var global = require('Global'); 
 var GameStep = cc.Enum({
     WAIT:0,
     SELECTBANKER:-1,
@@ -6,17 +7,20 @@ var GameStep = cc.Enum({
 });
 
 cc.Class({
-    extends: cc.Component,
+    extends: require("Controller"),
 
     properties: {
-       imgs:[cc.SpriteFrame],
-       point:[cc.SpriteFrame],
+        imgs:[cc.SpriteFrame],
+        point:[cc.SpriteFrame],
 
-       playerpoint:[cc.Sprite],
-       pcard:cc.Prefab,
-       seat:[cc.Node],
-       timeprog:cc.ProgressBar,
-       dice:[cc.Node],
+        playerpoint:[cc.Sprite],
+        pcard:cc.Prefab,
+        seat:[cc.Node],
+        timeprog:cc.ProgressBar,
+        dice:[cc.Node],
+
+        table:cc.Node,//桌面层
+        win_playerlist:cc.Node,
 
 
        _cards:[cc.Node],
@@ -25,6 +29,8 @@ cc.Class({
        _first:0,//当前发牌起始位
 
        _player:[],//游戏玩家
+
+       _poplist :false,//是否弹出了玩家列表
 
        //---方位---
        _selfseat:0,
@@ -43,16 +49,17 @@ cc.Class({
 
     // use this for initialization
     onLoad: function () {
-       
+       this._super();
        // this._canvas = cc.Canvas.instance;
        //确定方位
         this._selfseat=1;
         this._SELF = this._selfseat;
         this._LEFT = ( (this._selfseat+1)%4==0)?4:(this._selfseat+1)%4;
         this._TOP =  ( (this._selfseat+2)%4==0)?4:(this._selfseat+2)%4;
-        this._RIGHT =( (this._selfseat+3)%4==0)?4:(this._selfseat+3)%4;
+        this._RIGHT =( (this._selfseat+3)%4==0)?4:(this._selfseat+3)%4;       
 
-       
+       cc.Canvas.instance.node.on('touchstart', this.Touch,this);
+       //cc.systemEvent.on(cc.SystemEvent.EventType.TOUCH_START,this.Touch,this)
     },
 
     start:function(){
@@ -101,13 +108,13 @@ cc.Class({
 
         this.schedule( function() {    
             this._cards[i] = cc.instantiate(this.pcard);
-            this._cards[i].parent = cc.Canvas.instance.node;           
+            this._cards[i].parent = this.table;           
             this._cards[i].x =x;
             this._cards[i++].y =y;    
            
 
             this._cards[i] = cc.instantiate(this.pcard);
-            this._cards[i].parent = cc.Canvas.instance.node;
+            this._cards[i].parent = this.table;
             y+=16;
             this._cards[i].x =x;
             this._cards[i++].y =y;       
@@ -245,11 +252,32 @@ cc.Class({
     SetTime:function(timelen){
         this.timeprog.progress=0;
 
-      //  timelen =10;
-        this.schedule( function() {               
-          
-          this.timeprog.progress+=1/timelen*0.2;
-           
+        timelen =10;
+        this.schedule( function() {                         
+          this.timeprog.progress+=1/timelen*0.2;           
         }, 0.2, timelen/0.2, 0);
-    }
+    },
+
+    Touch:function(event){
+        //cc.log(event)
+        if(!this._poplist) return;
+        if(event.target.name == this.win_playerlist.name) return;
+
+        this._poplist = false;
+         this.win_playerlist.emit('popin');         
+    },
+
+    Btn_PlayerList:function(){
+        if(this._poplist) return;
+        this._poplist = true;
+        this.win_playerlist.emit('popout');
+    },
+
+    Btn_Exit:function(){
+        global.PopWinTip(1,'确定要退出吗？',function(){  cc.director.loadScene('room');   });       
+    },
+
+    Event_Back:function(){
+         global.PopWinTip(1,'确定要退出吗？',function(){  cc.director.loadScene('room');   }); 
+    },
 });

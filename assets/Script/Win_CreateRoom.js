@@ -1,0 +1,52 @@
+cc.Class({
+    extends: require("PopWin"),
+
+    properties: {
+        roomname:cc.EditBox,//房间名
+        maxmember:cc.Label,//参与人数
+        roundmark:cc.Node,
+        fund:cc.EditBox,//组局基金
+        fund_tip:cc.Node,
+
+        _membernum:4,//会员人数
+        _maxround:4,//最大圈数
+    },
+
+    // use this for initialization
+    onLoad: function () {
+        this._super();
+
+    },
+
+    onEnable:function(){
+        this._super();
+        this.roomname.string = '';
+        this.maxmember.string = '';
+        this.maxmember.string = this._membernum;
+        this.fund.string = '';
+    },
+
+    Btn_Round:function(event,customEventData){
+        this._maxround =  Number(customEventData);
+        this.roundmark.x = -240+(this._maxround-1)*160;      
+    },
+
+    Btn_MemberNum:function(evnet,customEventData){     
+        var n =  Number(customEventData);
+        if(this._membernum + n> 10 || this._membernum+n < 4) return;
+
+        this._membernum +=n;         
+        this.maxmember.string = this._membernum+'';
+    },
+
+    Btn_FundTip:function(){
+        this.fund_tip.active = true;
+        this.scheduleOnce(function(){
+            this.fund_tip.active = false;
+        },5);
+    },
+
+    Btn_Start:function(){
+         cc.director.loadScene('table');
+    },
+});
