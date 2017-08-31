@@ -1,50 +1,37 @@
-function gamesocket(){
-    //extends: cc.Component,
-
-
-}
-   //gamesocket.prototype.URL = '192.168.2.77';//'118.190.89.153';
-
-    gamesocket.prototype.URL = '118.190.89.153';
-    gamesocket.prototype.ws=null;
+ 
+function gamesocket(){}
+    
+    //gamesocket.prototype.URL = '192.168.2.77';//'118.190.89.153';
+    gamesocket.prototype.URL = '118.190.89.153';  
+    gamesocket.prototype.ws=null;   
     gamesocket.prototype.controller =null;
-    gamesocket.prototype.testid = 0;
-    gamesocket.prototype.MsgHandle = null;
+    gamesocket.prototype.heartid = 0;
+    gamesocket.prototype.selfclose= false;  
     
     gamesocket.prototype.block = false;
     gamesocket.prototype.ping =0;
 
     gamesocket.prototype.Init = function( server,code  ){
         var self =this;
+        if(this.ws) this.ws = null;
         this.ws = new WebSocket('ws://'+ this.URL+'/s/'+server+'/');     
       
         this.ws.binaryType = 'arraybuffer';
+
         this.ws.onopen = function(evt){
          
-            var p = {
-                version: 102,
-                seqId: Math.random() * 1000,
-                timestamp: new Date().getTime(),
-                data: JSON.stringify({
-                    code: code
-                })
-            };
-           this.send(JSON.stringify(p));
-
-           //this.Test();心跳测试
-           var that = this;
-           this.testid = setInterval(function(){
-                var p = {
-                    version: 102,
-                    method: 666,                       
-                    seqId: Math.random() * 1000,
-                    timestamp: new Date().getTime(),                     
-                };
-                that.send(JSON.stringify(p));
-                //console.log(p.timestamp);      
-            },9000);   
-
-           // console.log(this.ws);
+            var p = [
+                102,
+                1,
+                Math.random() * 1000,
+                new Date().getTime(),
+                JSON.stringify({  code: code  }),
+                null
+            ];
+           this.send(JSON.stringify(p)); 
+         
+           //开启心跳检测
+           self.heartid = self.HeartTest();
         };
 
         this.ws.onmessage = function(evt)
@@ -52,8 +39,8 @@ function gamesocket(){
             var data = evt.data;
             var type = typeof data;
 
-            data = JSON.parse(data);
-          
+            data = JSON.parse(data);          
+           
             if(self.ping == 0 )
                 self.ping = new Date().getTime()-data.timestamp;
             else{
@@ -70,34 +57,64 @@ function gamesocket(){
             }
 
             if( self.controller != null && !self.block)
-                self.controller.MsgHandle(data);  
+                self.controller.MsgHandle(data);       
         };
 
         this.ws.onclose = function(evt){
             console.log('client notified socket has closed.', evt);
-              clearInterval( this.testid);
+            clearInterval( self.heartid);
+            
             self.controller.CloseSocket();
+
+            // if(self.selfclose)
+            //     self.controller.CloseSocket();
+            // else            
+            //     self.controller.ResConnect();
+            // self.selfclose = false;
         };     
+
+        this.ws.onerror = function(evt){
+            cc.log('------socket error---------');            
+        };
 
         return this;  
     }
 
     gamesocket.prototype.SendMsg = function(type,data,backid){
-        var p = {
-            version: 102,
-            method: type,
-            seqId: Math.random() * 1000,
-            timestamp: new Date().getTime()           
-        };
-        if(data) p.data = data;
-        if(backid) p.backendId = backid;
+        // var p = {
+        //     version: 102,
+        //     method: type,
+        //     seqId: Math.random() * 1000,
+        //     timestamp: new Date().getTime()           
+        // };
+        var p = [
+            102,
+            type,
+            Math.random() * 1000,
+            new Date().getTime(),
+            null,
+            null           
+        ];
+        if(data) p[4] = data;
+        //if(backid) p.backendId = backid;
         this.ws.send(JSON.stringify(p));
     }
 
-    gamesocket.prototype.Close = function(){
-         this.ws.close();      
-    }
-  
+    gamesocket.prototype.Close = function( isself){
+        this.selfclose = isself;
+        this.ws.close();
+        //console.log('--清空消息队列--');
+        //   this.msglist.splice(0,this.msglist.length);
+    }    
+
+    gamesocket.prototype.ClearMsg = function(){
+            this.ws.close();
+    }   
+   
+    gamesocket.prototype.MsgHandle = null;
+    // gamesocket.prototype.MsgHandle = function(ttt,data){
+    //     ttt(data);
+    // }
     gamesocket.prototype.MsgToObj = function( data  ){
         var obj = {};
 
@@ -107,21 +124,30 @@ function gamesocket(){
         return obj;
     }
 
-    gamesocket.prototype.Test = function(){
+    gamesocket.prototype.HeartTest = function(){
 
-        setInterval(function(){
-             var p = {
-                version: 102,
-                method: 666,                       
-                seqId: Math.random() * 1000,
-                timestamp: new Date().getTime(),                     
-            };
-            this.ws.send(JSON.stringify(p));
-            console.log(p.timestamp);      
-
-        },5000);           
+        var self = this;
+        var id = setInterval(function(){
+             var p = [
+                102,
+                666,                       
+                Math.random() * 1000,
+                new Date().getTime() ,
+                null,
+                null                    
+             ];
+            //  var p = {
+            //     version: 102,
+            //     method: 666,                       
+            //     seqId: Math.random() * 1000,
+            //     timestamp: new Date().getTime(),                     
+            // };
+            self.ws.send(JSON.stringify(p));
+            //console.log(p.timestamp);     
+        },5000);       
+        
+        return id;
     }
 
 var gs = new gamesocket();  
 module.exports =gs;
-//module.exports =gs.Init();

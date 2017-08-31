@@ -8,23 +8,23 @@ cc.Class({
     // use this for initialization
     onLoad: function () {
 
-         var that = this;
-        cc.game.on(cc.game.EVENT_HIDE, function () {           
-            if(that._running){
-                //cc.log('----------game hide');
-                that._running =false;
-                that.onHide();
-            }            
-        });
+        var that = this;
+        // cc.game.on(cc.game.EVENT_HIDE, function () {           
+        //     if(that._running){
+        //         //cc.log('----------game hide');
+        //         that._running =false;
+        //         that.onHide();
+        //     }            
+        // });
 
-         cc.game.on(cc.game.EVENT_SHOW, function () {
+        //  cc.game.on(cc.game.EVENT_SHOW, function () {
            
-            if(!that._running){
-                //cc.log('----------game show');
-                that._running = true;
-                that.onShow();
-            }
-        });
+        //     if(!that._running){
+        //         //cc.log('----------game show');
+        //         that._running = true;
+        //         that.onShow();
+        //     }
+        // });
 
         
          cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);

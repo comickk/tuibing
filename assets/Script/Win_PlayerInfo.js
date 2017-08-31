@@ -3,6 +3,7 @@ cc.Class({
 
     properties: {   
         playerline:cc.Prefab,
+        playerlist:cc.Node,
        
     },
 
@@ -26,7 +27,22 @@ cc.Class({
     },
 
     UpdatePlayer:function(event){
-        cc.log(event.detail);
+        
+       // cc.log(event.detail);
+        var data =event.detail.data;
+        //clear
+        if(this.playerlist.childrenCount >0){
+            //var list =this.playerlist.children;
+            this.playerlist.removeAllChildren();
+        }
+        //update
+        for(let i=0;i<data.length;i++){         
+            var line = cc.instantiate(this.playerline);
+            line.parent = this.playerlist;
+            line.setPosition(0,0);
+            line.emit('setinfo',{nick:data[i].user_name,score:0});           
+        }
+
     },
 
     // called every frame, uncomment this function to activate update callback

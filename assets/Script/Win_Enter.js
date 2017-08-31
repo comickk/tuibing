@@ -5,8 +5,9 @@ cc.Class({
         roompsw:cc.EditBox,
     },
 
-    Btn_Start:function(){
-         cc.director.loadScene('table');
+    Btn_Start:function(){       
+      
+        require('Global').socket.SendMsg(3007,this.roompsw.string);
     }  
 
 });

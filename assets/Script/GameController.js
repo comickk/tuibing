@@ -12,14 +12,21 @@ cc.Class({
     properties: {
         imgs:[cc.SpriteFrame],
         point:[cc.SpriteFrame],
+        chipimg:[cc.SpriteFrame],
 
         playerpoint:[cc.Sprite],
         pcard:cc.Prefab,
+        chip:cc.Prefab,//筹码
+
+        selfseat:cc.Node,
         seat:[cc.Node],
         timeprog:cc.ProgressBar,
         dice:[cc.Node],
 
+        roomid:cc.Label,
         table:cc.Node,//桌面层
+        chiplayer:cc.Node,//筹码层
+
         win_playerlist:cc.Node,
 
 
@@ -39,33 +46,133 @@ cc.Class({
        _LEFT:0,
        _TOP:0,
        _RIGHT:0,
+
+       _chippool:cc.NodePool,
        //
 
        //是否有白板
        isHaveBan:true,
        
-       //_canvas:cc.Canvas,
+       //_canvas:cc.Canvas,       
     },
 
     // use this for initialization
     onLoad: function () {
-       this._super();
-       // this._canvas = cc.Canvas.instance;
-       //确定方位
-        this._selfseat=1;
+        this._super();
+        // this._canvas = cc.Canvas.instance;
+
+        this.roomid.string = '房间密码:'+ global.roominfo.group_id;
+
+        //确定方位
+        for(let i=0;i<global.playerinfo.length;i++){
+            if(global.playerinfo[i].user_id == global.selfinfo.id){
+                this._selfseat=global.playerinfo[i].seat; //
+                break;            
+        } }       
+
         this._SELF = this._selfseat;
         this._LEFT = ( (this._selfseat+1)%4==0)?4:(this._selfseat+1)%4;
         this._TOP =  ( (this._selfseat+2)%4==0)?4:(this._selfseat+2)%4;
         this._RIGHT =( (this._selfseat+3)%4==0)?4:(this._selfseat+3)%4;       
 
-       cc.Canvas.instance.node.on('touchstart', this.Touch,this);
-       //cc.systemEvent.on(cc.SystemEvent.EventType.TOUCH_START,this.Touch,this)
-    },
+        cc.Canvas.instance.node.on('touchstart', this.Touch,this);
+        //cc.systemEvent.on(cc.SystemEvent.EventType.TOUCH_START,this.Touch,this)
 
-    start:function(){
+        this.InitNodePool();
         
+        global.socket.controller = this;
+        this.UpdatePlayer(global.playerinfo);
+
+        //自动举手
+        //global.socket.SendMsg(5005);
+    },
+   
+    onDestroy:function(){
+        this._super();
+        this._chippool.clear();
     },
 
+    InitNodePool:function(){
+        this._chippool = new cc.NodePool();
+
+        for(let i=0;i<40;i++){
+			let chip = cc.instantiate(this.chip);
+			this._chippool.put(chip);	}
+    },
+
+    MsgHandle:function(data){
+        cc.log(data);
+        switch(data[0]){            
+            //case 3002:    //创建一个房间
+            case 3008:     //加入一个房间  
+            case 3006:      //有人退出
+                // 更新房间玩家信息
+                if(data[3]==null )
+                    cc.log('join room or exit room error!');
+                else{
+                    global.playerinfo = data[3][0];
+                    global.roominfo = data[3][1];  
+                    this.UpdatePlayer(global.playerinfo);
+                }
+            break;
+        
+            default:           
+            break;          
+        }        
+    },
+
+    //玩家下注
+    PlayerBet:function(seat,num ){       
+        //seat =1;
+        var p0=null;
+        var p1=null;
+        switch(seat){
+            case this._LEFT:
+            p0 = this.seat[1].position;
+            p1 = cc.v2(p0.x+200,p0.y-100);    
+            this.seat[1].emit('playerbet',{num:num});               
+            break;
+            case this._TOP:
+            p0 = this.seat[2].position;
+            p1 = cc.v2(p0.x+200,p0.y-100); 
+            this.seat[2].emit('playerbet',{num:num});    
+            break;
+            case this._RIGHT:
+            p0 = this.seat[3].position;
+            p1 = cc.v2(p0.x-200,p0.y-100); 
+            this.seat[3].emit('playerbet',{num:num});    
+            break;
+            case this._SELF:
+            p0 = this.selfseat.position;
+            p1 = cc.v2(p0.x+100,p0.y+250); 
+            this.selfseat.emit('playerbet',{num:num});    
+            break;
+        }
+        if(p0 == null) return;
+        
+        
+        var chip;
+        if(this._chippool.size()>0)
+			chip = this._chippool.get();
+		else
+            chip =cc.instantiate(this.chip);  
+
+        
+        chip.parent = this.chiplayer;
+        chip.setPosition(p0);
+        chip.runAction(cc.moveTo(0.4,p1));        
+    },
+    //资金结算，转移筹码
+    Settlement:function(winner ,loser,num){
+
+    },
+    //回收筹码
+    RecoveryChip:function(){
+        var chips = this.chiplayer.children;
+        for(let i =0;i<chips.length;i++){
+            this._chippool.put(chips[i]); }
+    },
+    
     // update: function (dt) {
 
     // },
@@ -78,6 +185,31 @@ cc.Class({
     DelPlayer:function(data){
 
     },
+
+    UpdatePlayer:function(data){
+        for(let i=1;i<4;i++)
+            this.seat[1].emit('clear');
+
+        for(let i=0;i<data.length;i++){
+            switch(data[i].seat){
+            case this._LEFT:                   
+                this.seat[1].emit('setplayerinfo',{nick:data[i].user_name,score:0});
+                break;
+            case this._TOP:
+                this.seat[2].emit('setplayerinfo',{nick:data[i].user_name,score:0});
+                break;
+            case this._RIGHT:
+                this.seat[3].emit('setplayerinfo',{nick:data[i].user_name,score:0}); 
+                break;    
+            case this._SELF:
+                this.selfseat.emit('setplayerinfo',{nick:data[i].user_name,score:0});
+                break;              
+            }            
+        }
+
+        this.win_playerlist.emit('updateplayer',{data:data});
+    },
+
     //码牌-------------------
     CreatCard:function(){
         var x = -450;
@@ -141,10 +273,7 @@ cc.Class({
     WaitForBet:function(){
         this.SetTime(10);
     },
-    //下注---------------------
-    PlayerBet:function(seat,bet){
 
-    },
     //发牌------------------------
     Deal:function(first){
         first =1;
@@ -274,10 +403,26 @@ cc.Class({
     },
 
     Btn_Exit:function(){
-        global.PopWinTip(1,'确定要退出吗？',function(){  cc.director.loadScene('room');   });       
+        global.PopWinTip(1,'确定要退出吗？',this.ExitGame );       
     },
 
     Event_Back:function(){
-         global.PopWinTip(1,'确定要退出吗？',function(){  cc.director.loadScene('room');   }); 
+         global.PopWinTip(1,'确定要退出吗？',this.ExitGame ); 
+    },
+
+    ExitGame:function(){      
+        global.socket.SendMsg(3005);
+        cc.director.loadScene('room'); 
+    },
+
+    CloseSocket:function(){
+        cc.log('socket close');
+    },
+    //-----------------------
+    TestBet:function(){
+        this.PlayerBet(1,100);
+        this.PlayerBet(2,100);
+        this.PlayerBet(3,100);
+        this.PlayerBet(4,100);
     },
 });

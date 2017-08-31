@@ -3,7 +3,9 @@ var Global = function(){
 }
 
     //  玩家数据类  
-   
+    Global.prototype.selfinfo = null;
+    Global.prototype.roominfo = null;
+    Global.prototype.playerinfo =null;
    
     Global.prototype.socket = null;
     Global.prototype.anysdk = null;

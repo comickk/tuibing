@@ -48,6 +48,8 @@ cc.Class({
            var that = this;
            this.BtnOK();          
         },this);
+
+        this.btn_accept.on('touchend',function(){ this.BtnOK() },this);
     },   
 
     BtnOK:function(){      

@@ -1,0 +1,26 @@
+{
+  "appKey": "D3246CAC-A4D9-1FF4-3C3F-40CEDBE886A9",
+  "appSecret": "d39df56f9bd69743c85f818446081249",
+  "excludeScenes": [],
+  "includeAnySDK": false,
+  "includeSdk": [
+    "anysdk"
+  ],
+  "inlineSpriteFrames": true,
+  "inlineSpriteFrames_native": true,
+  "mergeStartScene": false,
+  "oauthLoginServer": "",
+  "optimizeHotUpdate": true,
+  "orientation": {
+    "landscapeLeft": true,
+    "landscapeRight": true,
+    "portrait": false,
+    "upsideDown": false
+  },
+  "packageName": "com.raylight.tuibing",
+  "privateKey": "2A6807F790C944A3DE7789D5CA8EE6D0",
+  "renderMode": "0",
+  "startScene": "f630377b-14eb-4b25-a8bb-f1a7bed0f81b",
+  "title": "tuibing",
+  "webOrientation": "auto"
+}

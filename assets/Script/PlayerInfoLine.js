@@ -9,11 +9,13 @@ cc.Class({
 
     // use this for initialization
     onLoad: function () {
-        this.node.on('setinof',this.SetPlayerInfo,this);
+        this.node.on('setinfo',this.SetPlayerInfo,this);
     },
 
     SetPlayerInfo:function(event){
-        cc.log(event.detail);
+        //cc.log(event.detail);
+        this.nick.string = event.detail.nick;
+        this.score.string = event.detail.score;
     },
 
     // called every frame, uncomment this function to activate update callback

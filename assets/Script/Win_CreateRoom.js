@@ -20,7 +20,7 @@ cc.Class({
 
     onEnable:function(){
         this._super();
-        this.roomname.string = '';
+        this.roomname.string = '未命名房间';
         this.maxmember.string = '';
         this.maxmember.string = this._membernum;
         this.fund.string = '';
@@ -31,7 +31,7 @@ cc.Class({
         this.roundmark.x = -240+(this._maxround-1)*160;      
     },
 
-    Btn_MemberNum:function(evnet,customEventData){     
+    Btn_MemberNum:function(event,customEventData){     
         var n =  Number(customEventData);
         if(this._membernum + n> 10 || this._membernum+n < 4) return;
 
@@ -46,7 +46,15 @@ cc.Class({
         },5);
     },
 
-    Btn_Start:function(){
-         cc.director.loadScene('table');
+    Btn_Start:function(){       
+
+        var data =   JSON.stringify({
+              group_name: this.roomname.string,
+              visitor_count: this._membernum-4,  // n个钓鱼人
+              extend_round_count:  this._maxround,  // n圈
+              extend_fund: Number(this.fund.string),  // 组局基金
+        });          
+
+        require('Global').socket.SendMsg(3001,data);        
     },
 });
