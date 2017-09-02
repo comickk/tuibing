@@ -36,11 +36,14 @@ cc.Class({
             this.playerlist.removeAllChildren();
         }
         //update
-        for(let i=0;i<data.length;i++){         
+        for(let i=0;i<data.length;i++){       
+            var score =0;
+            if(cc.isValid(data[i].score))
+                score = data[i].score;  
             var line = cc.instantiate(this.playerline);
             line.parent = this.playerlist;
             line.setPosition(0,0);
-            line.emit('setinfo',{nick:data[i].user_name,score:0});           
+            line.emit('setinfo',{nick:data[i].user_name,score:score});           
         }
 
     },

@@ -46,13 +46,13 @@ cc.Class({
         },5);
     },
 
-    Btn_Start:function(){       
-
+    Btn_Start:function(){  
+        
         var data =   JSON.stringify({
               group_name: this.roomname.string,
               visitor_count: this._membernum-4,  // n个钓鱼人
-              extend_round_count:  this._maxround,  // n圈
-              extend_fund: Number(this.fund.string),  // 组局基金
+              round_count:  this._maxround,  // n圈
+              fund: Number(this.fund.string),  // 组局基金
         });          
 
         require('Global').socket.SendMsg(3001,data);        

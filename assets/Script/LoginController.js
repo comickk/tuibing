@@ -27,13 +27,13 @@ cc.Class({
             global.wintip =  cc.find('PopWinLayer/Win_Tip');
         }
 
-        this.node.on('getauthcode',this.GetAuthCode,this);
+        this.node.on('getauthcode',this.GetAuthCode,this);        
     },
 
     
-    Btn_Login:function()
+    Btn_Login:function(event,customEventData)
     {   
-        var arg ='user_name='+'hx';//this._lastnick;
+        var arg ='user_name='+customEventData;//this._lastnick;
         arg += '&user_pass='+'123456';//this._lastpass;  
         this.Send(arg);                               
     },
@@ -81,7 +81,7 @@ cc.Class({
     },   
 
     MsgHandle:function(data){               
-        //cc.log('------------msghandle-------------');   
+        cc.log(data);   
         switch(data[0]){            
             case 1:      
                 this.img_load.active = true;

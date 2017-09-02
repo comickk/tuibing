@@ -15,7 +15,18 @@ cc.Class({
     },
 
     SetResult:function(event){
-        cc.log(event.detail);
+       // cc.log(event.detail);
+        var score = event.detail.score;
+        this.nick.string = score.nick;
+        this.gold.string = score.gold;
+        this.score.string = score.score;
+        var point=0;
+        if(score.card[0] == score.card[1])//对子       
+            point = '对'+score.card[0] ;       
+        else        
+            point = (score.card[0]+score.card[1])%10 + '点';
+
+        this.point.string = point;         
     },
 
     

@@ -108,7 +108,7 @@
         "__uuid__": "8f65eb23-c000-4405-b1b3-a7b685a36902"
       }
     ],
-    "playOnLoad": true
+    "playOnLoad": false
   },
   {
     "__type__": "59dc1vtGelIHbgr4qdqWZTa",

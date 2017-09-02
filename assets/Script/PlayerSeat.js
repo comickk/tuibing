@@ -18,6 +18,10 @@ cc.Class({
         this.node.on('clear',this.Clear,this);
         this.node.on('setplayerinfo',this.SetPlayerInfo,this);
         this.node.on('playerbet',this.PlayerBet,this);
+        this.node.on('clearbet',this.ClearBet,this);
+        this.node.on('setbetnum',function(event){  
+            this.betnum.string = event.detail.num;
+        },this);
     },
 
     Clear:function(){
@@ -36,6 +40,10 @@ cc.Class({
     PlayerBet:function(event){
         this.betnum.node.active = true;
         this.betnum.string = event.detail.num;
+    },
+    ClearBet:function(){
+        this.betnum.node.active = false;
+        this.betnum.string = '';
     },
     // called every frame, uncomment this function to activate update callback
     // update: function (dt) {

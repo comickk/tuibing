@@ -14,13 +14,21 @@ cc.Class({
         betslider:cc.Slider,
 
         _type:1,
-
+        _bankerbet:0,
        // _showbetnum:false,
     },
 
     // use this for initialization
     onLoad: function () {        
         this.betnum.node.opacity=0;
+
+        this.node.on('showbtn',function(event){ this.playerbet.active = true;  
+            this.betslider.progress =0;
+            this._bankerbet = event.detail.bet;
+        },this);
+
+        this.node.on('showbankerbtn',function(){ this.bankbet.active = true;  },this);     
+        this.node.on('autobet',this.AutoBet,this); 
     },
     
     SetBetNum:function(){       
@@ -28,12 +36,24 @@ cc.Class({
         if(this.betnum.node.opacity==0) 
             this.betnum.node.opacity =255;         
 
-        this.betnum.string = 10 * Math.round(10*this.betslider.progress);
+        //this.betnum.string = this._bankerbet/10+ this._bankerbet/10 * Math.round(9*this.betslider.progress);
+        this.betnum.string = 10 * Math.round(this._bankerbet/10*this.betslider.progress);
     },
 
     Btn_PlayerBet:function(event,customEventData){
         cc.log(this.betnum.string);
+        //var bet = Number(customEventData);
+        //if(bet ==1) 
+        if(customEventData =='2'){
+            this.betnum.string =this._bankerbet+'';
+        }else{
+            var bet = Number(this.betnum.string);
+            if( bet > this._bankerbet || bet < 10)
+                this.betnum.string = 10;
+        }
         this.betnum.node.opacity=0;
+        require('Global').socket.SendMsg(5019,this.betnum.string-0); 
+        this.playerbet.active = false;
     },
 
     Btn_BankerBet:function(event,customEventData){ 
@@ -51,6 +71,36 @@ cc.Class({
                 this.bankbtn2.interactable = false;
                 this.bankbtn3.interactable = false;
             break;
+        }
+        require('Global').socket.SendMsg(5017,Number(customEventData));        
+        this.bankbet.active = false;
+    },
+
+    AutoBet:function(){
+        if(this.bankbet.active){
+            if(this.bankbtn1.interactable){
+                this.Btn_BankerBet(null,'200');
+                return;
+            }
+
+            if(this.bankbtn2.interactable){
+                this.Btn_BankerBet(null,'200');
+                return;
+            }
+
+            if(this.bankbtn3.interactable){
+                this.Btn_BankerBet(null,'200');
+                return;
+            }
+
+            cc.log('无法续锅');
+            this.bankbet.active = false;
+            return;
+        }
+
+        if(this.playerbet.active){
+            this.betnum.string='10';
+            this.Btn_PlayerBet(null,'1');
         }
     },
 });

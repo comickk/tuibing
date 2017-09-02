@@ -59,6 +59,15 @@ cc.Class({
         cc.log(data);
         switch(data[0]){            
             case 3002:    //创建一个房间
+            if(data[3]==null ){
+                this.ErrorTip(data[4]);
+            }else{
+                global.playerinfo =new Array();               
+                global.playerinfo.push(data[3]);
+                //global.roominfo = data[3];
+                cc.director.loadScene('table');    
+            }
+        break;
             case 3008:     //加入一个房间
                 //cc.log(data);  
                
@@ -74,8 +83,10 @@ cc.Class({
                 if(data[3]==null ){
                     this.ErrorTip(data[4]);
                 }else{
-                    global.playerinfo = data[3][0];
-                    global.roominfo = data[3][1];
+                    global.playerinfo =new Array();
+                    for(let i in data[3])
+                        global.playerinfo.push(data[3][i]);
+                    //global.roominfo = data[3];
                     cc.director.loadScene('table');    
                 }
             break;

@@ -11,8 +11,15 @@ cc.Class({
     onLoad: function () {
         this.node.on('roll',function(event){
             this._pos = event.detail.pos;
-            this.node.runAction(  cc.moveBy(1,-300,-100));          
+            this.node.runAction(  cc.moveBy(1,-300,-100));   
+            this.node.getComponent(cc.Animation).play();       
 
+        },this);
+
+        this.node.on('rest',function(){
+            this.node.x+=300; 
+            this.node.y+=100;
+            this.node.active = false;
         },this);
     },
 
