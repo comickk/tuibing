@@ -7027,8 +7027,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 581,
-      "height": 37
+      "width": 0,
+      "height": 20
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -7036,7 +7036,7 @@
     "_scaleY": 1,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": -290.8,
+      "x": -283,
       "y": 0
     },
     "_skewX": 0,
@@ -7057,8 +7057,8 @@
     "_spriteFrame": {
       "__uuid__": "c61c2360-aff0-4d83-bb83-0e9edba2108e"
     },
-    "_type": 0,
-    "_sizeMode": 2,
+    "_type": 1,
+    "_sizeMode": 0,
     "_fillType": 0,
     "_fillCenter": {
       "__type__": "cc.Vec2",
@@ -7106,12 +7106,12 @@
       "__id__": 189
     },
     "_enabled": true,
-    "_N$totalLength": 581,
+    "_N$totalLength": 565,
     "_N$barSprite": {
       "__id__": 191
     },
     "_N$mode": 0,
-    "_N$progress": 0.5,
+    "_N$progress": 0,
     "_N$reverse": false
   },
   {

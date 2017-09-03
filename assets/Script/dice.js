@@ -11,7 +11,13 @@ cc.Class({
     onLoad: function () {
         this.node.on('roll',function(event){
             this._pos = event.detail.pos;
-            this.node.runAction(  cc.moveBy(1,-300,-100));   
+            this.node.x = event.detail.x;
+            this.node.y = event.detail.y;
+            //this.node.runAction(  cc.moveBy(1,-300,-100)); 
+            if(event.detail.id==1)
+                this.node.runAction(  cc.moveTo(1,-30,30));   
+            if(event.detail.id==2)
+                this.node.runAction(  cc.moveTo(1,30,-30));   
             this.node.getComponent(cc.Animation).play();       
 
         },this);

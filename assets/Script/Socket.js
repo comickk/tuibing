@@ -1,8 +1,8 @@
  
 function gamesocket(){}
     
-    //gamesocket.prototype.URL = '192.168.2.77';//'118.190.89.153';
-    gamesocket.prototype.URL = '118.190.89.153';  
+    gamesocket.prototype.URL = '192.168.2.77';//'118.190.89.153';
+    //gamesocket.prototype.URL = '118.190.89.153';  
     gamesocket.prototype.ws=null;   
     gamesocket.prototype.controller =null;
     gamesocket.prototype.heartid = 0;

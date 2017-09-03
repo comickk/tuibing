@@ -58,21 +58,24 @@ cc.Class({
 
     Btn_BankerBet:function(event,customEventData){ 
         cc.log(customEventData);
+        var bet =200;
         switch(customEventData){
             case '200':
                 this.bankbtn1.interactable = false;
             break;
             case '300':
+                bet =300;
                 this.bankbtn1.interactable = false;
                 this.bankbtn2.interactable = false;
             break;
             case '500':
+                bet = 500;
                 this.bankbtn1.interactable = false;
                 this.bankbtn2.interactable = false;
                 this.bankbtn3.interactable = false;
             break;
         }
-        require('Global').socket.SendMsg(5017,Number(customEventData));        
+        require('Global').socket.SendMsg(5017,bet);        
         this.bankbet.active = false;
     },
 

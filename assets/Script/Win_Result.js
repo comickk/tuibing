@@ -24,6 +24,7 @@ cc.Class({
             line.emit('setresult',{score:score[i]});}
 
         var timelen =10;
+        this.timebar.progress=0;
         this.schedule( function() {                         
             this.timebar.progress+=1/timelen*0.2;    
             if(this.timebar.progress >= 1)

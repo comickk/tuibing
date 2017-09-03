@@ -57,8 +57,7 @@ cc.Class({
 
        _chippool:cc.NodePool,
        //
-        _count:0,
-        _count1:0,
+        _count:0,        
 
         _status:0,
         _round:0,
@@ -76,13 +75,13 @@ cc.Class({
         // this._canvas = cc.Canvas.instance;
 
        // this.roomid.string = '房间密码:'+ global.roominfo.group_id;
-        if(cc.isValid(global.playerinfo)){
-            this.roomid.string = '房间密码:'+  global.playerinfo[0].group_id;
+        if(cc.isValid(global.roominfo) && cc.isValid(global.playerinfo)){
+            this.roomid.string = '房间密码:'+  global.roominfo.id;
         
             //确定方位       
             for(let i in global.playerinfo){
                 if(global.playerinfo[i].id == global.selfinfo.id){
-                    this._selfseat= this.SeatTran(global.playerinfo[i].seat); //
+                    this._selfseat= global.playerinfo[i].seat; //
                     break;            
             } }       
         }else
@@ -105,7 +104,7 @@ cc.Class({
         //自动举手
         if(cc.isValid(global.socket)){
             global.socket.controller = this;
-            global.socket.SendMsg(5005);
+            global.socket.SendMsg(3011);
         }
     },
    
@@ -124,14 +123,22 @@ cc.Class({
 
     MsgHandle:function(data){
         cc.log(data);
+        if(data[4]!=null) {
+
+            return;
+        }
         switch(data[0]){            
             //case 3002:    //创建一个房间
-            case 3008:     //加入一个房间                  
-                this.AddPlayer(data[3]);
+            case 3008:     //加入一个房间         
+                if(global.roominfo==null)
+                    global.GetRoomInfo(data[3][0]);
+
+                this.AddPlayer(data[3][1]);
                 this.UpdatePlayer(global.playerinfo);
             break;
+            
             case 3006:      //有人退出
-                this.DelPlayer(data[3].id);
+                this.DelPlayer(data[3][0]);
                 this.UpdatePlayer(global.playerinfo);
                 // 更新房间玩家信息
                 // if(data[3]==null )
@@ -143,42 +150,48 @@ cc.Class({
                 // }
             break;
 
-            case 5006://玩家已准备                
-                if(data[3].act_status==1 && data[3].ready_count ==4)  
-                    this.WaitForSelectBanker(data[3].user_seat);   
+            case 3010://重新上线
             break;
 
-            case 5014://玩家打色子比大小选庄
-                
-                var seat =data[3].user_seat;
-                var last = seat;
-                switch(seat){
-                    case 2:last =1;break;
-                    case 4:last =2;break;
-                    case 8:last =4;break;
-                    case 1:last =8;break;
-                }
+            case 3012://玩家已准备 
+                //0 id   1 seat  2  ready num
+                if(data[3][2]==4)
+                    this.WaitForSelectBanker( 1 );
+            break;
 
-                var dice =data[3].craps_result[ last ]; 
+            // case 5006://玩家已准备                
+            //     if(data[3].act_status==1 && data[3].ready_count ==4)  
+            //         this.WaitForSelectBanker(data[3].user_seat);   
+            // break;
+
+            case 5014://玩家打色子比大小选庄
+                //0 id    1 seat   2 pos[] 3 next 4 banker
+                var seat = data[3][1];                
+                var dice = data[3][2];
+                var next = data[3][3];
+                var banker = data[3][4]; 
                
-                this.SetDice(dice[0],dice[1]);
+                this.StopTimer();
+                this.SetDice(seat,dice[0],dice[1]);
 
                 this.scheduleOnce(function() {
                     this.dice[0].emit('rest');
                     this.dice[1].emit('rest');
 
-                    if(data[3].act_status==2)                      
-                       this.SetBanker(data[3].user_seat_banker);
+                    if(banker != 0)                      
+                        this.SetBanker(banker);
                     else
-                        this.WaitForSelectBanker(data[3].user_seat);  
+                        this.WaitForSelectBanker(next);  
                 }, 3);              
                 
             break;
 
             case 5016://庄选先起牌位
+                //0 id   1 seat   2  first   3  pos
                 //this._first = this.SeatTran( data[3].round_no_first_user_seat);
-                this._first = data[3].round_no_first_user_seat;
-                this.SetDice(data[3].user_seat_banker_craps[0],data[3].user_seat_banker_craps[1]);
+                this._first = data[3][2];
+                this.StopTimer();
+                this.SetDice(data[3][1],data[3][3][0],data[3][3][1]);
 
                 this.scheduleOnce( function(){
                     this.dice[0].emit('rest');
@@ -187,36 +200,29 @@ cc.Class({
             break;
 
             case 5018://庄下底
-                //data.users["id"].bet
-                var bankerid='';
-                for(let i in global.playerinfo){
-                    if(this._banker == this.SeatTran( global.playerinfo[i].seat )){
-                        bankerid = global.playerinfo[i].id;
-                        break;}}
-
-                this._status=1;
-                var bet = data[3].users[bankerid].bet+0;
-                this._bankerbet = bet;
-                this.PlayerBet(this._banker,bet);
-               
-                this.scheduleOnce( this.WaitForBankerDice,1);                
-
+                //data.users["id"].bet               
+                if(data[3][1] == this._banker){
+                    this._status=1;
+                    var bet = data[3][3]+0;
+                    this._bankerbet = bet;
+                    this.StopTimer();
+                    this.PlayerBet(this._banker,bet);
+                
+                    this.scheduleOnce( this.WaitForBankerDice,1);   
+                }       
             break;
 
             case 5020://闲下注
-               
-                for(let i in data[3].users){
-                    if(data[3].user_seat_2 == data[3].users[i].seat){
-                        this.PlayerBet( this.SeatTran( data[3].user_seat_2),data[3].users[i].bet-0);
-                        break;}}
-
-                if(data[3].act_status==5){
-                    this.StopTimer();
-                    this.Deal();  }
+               //0 id    1  seat   2  bet   3 group id
+                this.PlayerBet( data[3][1],data[3][2]);
             break;
 
-            case 5022://亮牌结算
-                
+            case 5022:
+                this.StopTimer();
+                this.Deal();  
+            break;
+            
+            case 5024://亮牌结算
                 var res = [0,0,0,0];
                 for(let i=0;i<4;i++){
                     for(let j in data[3].users){
@@ -304,14 +310,16 @@ cc.Class({
 
     //添加 玩家------------------
     AddPlayer:function(data){
+       
         for(let i in data){
             var ishave = false;
+            var player = global.GetPlayerInfo(data[i]);
             for(let j in global.playerinfo)
-                if(data[i].id == global.playerinfo[j].id) {
+                if(player.id == global.playerinfo[j].id) {
                     ishave = true;
                     break;}
 
-            if(!ishave) global.playerinfo.push(data[i]);}        
+            if(!ishave) global.playerinfo.push(  player  );}        
     },
     //删除玩家
     DelPlayer:function(id){
@@ -325,22 +333,19 @@ cc.Class({
         for(let i=1;i<4;i++)
             this.seat[i].emit('clear');
 
-        for(let i in data){
-            var score =0;
-            if(cc.isValid(data[i].score))
-                score = data[i].score;
-            switch( this.SeatTran( data[i].seat)){
+        for(let i in data){       
+            switch( data[i].seat){
             case this._LEFT:                   
-                this.seat[1].emit('setplayerinfo',{nick:data[i].nickname,score:score});
+                this.seat[1].emit('setplayerinfo',{nick:data[i].nick,score:data[i].score});
                 break;
             case this._TOP:
-                this.seat[2].emit('setplayerinfo',{nick:data[i].nickname,score:score});
+                this.seat[2].emit('setplayerinfo',{nick:data[i].nick,score:data[i].score});
                 break;
             case this._RIGHT:
-                this.seat[3].emit('setplayerinfo',{nick:data[i].nickname,score:score}); 
+                this.seat[3].emit('setplayerinfo',{nick:data[i].nick,score:data[i].score}); 
                 break;    
             case this._SELF:
-                this.selfseat.emit('setplayerinfo',{nick:data[i].nickname,score:score});
+                this.selfseat.emit('setplayerinfo',{nick:data[i].nick,score:data[i].score});
                 break;              
             }}
 
@@ -353,7 +358,7 @@ cc.Class({
 
     WaitForSelectBanker:function(seat){
 
-        if(this._selfseat == this.SeatTran(seat)){
+        if(this._selfseat == seat){
             this.btndice.active = true;
             this.StartTimer(10,'请掷骰子选庄',this.TimeOut_Dice);
         }else
@@ -433,16 +438,37 @@ cc.Class({
     },
 
     //打骰子--------------------
-    SetDice:function(d1,d2){        
-       
-        this.dice[0].active = this.dice[1].active = true;
+    SetDice:function(seat,d1,d2){        
       
-       this.dice[0].emit('roll',{pos:d1});
-       this.dice[1].emit('roll',{pos:d2});      
+        this.dice[0].active = this.dice[1].active = true;
+        var x=0;
+        var y=0;
+       
+        switch(seat){
+            case this._SELF:
+                x = this.selfseat.x;
+                y = this.selfseat.y;
+            break;
+            case this._LEFT:
+                x = this.seat[1].x;
+                y = this.seat[1].y;
+            break;
+            case this._TOP:
+                x = this.seat[2].x;
+                y = this.seat[2].y;
+            break;
+            case this._RIGHT:
+                x = this.seat[3].x;
+                y = this.seat[3].y;
+            break;
+        }
+      
+        this.dice[0].emit('roll',{pos:d1,x:x,y:y,id:1});
+        this.dice[1].emit('roll',{pos:d2,x:x,y:y,id:2});      
     },
     //设庄---------------------
     SetBanker:function(seat){
-        this._banker= this.SeatTran(seat);
+        this._banker= seat;
 
         this.banker.active = true;
 
@@ -571,15 +597,14 @@ cc.Class({
             for(let i in global.playerinfo){
                 if( j+1 == this.SeatTran(global.playerinfo[i].seat)){
                     playerscore.push({
-                        nick:global.playerinfo[i].nickname,
+                        nick:global.playerinfo[i].nick,
                         card:[data[c++],data[c++]],
                         gold:0,
                         score:score[j]
                     });
-                    if( cc.isValid(global.playerinfo[i].score))
-                        global.playerinfo[i].score+=score[j];
-                    else
-                        global.playerinfo[i]['score']= score[j];
+                    
+                    global.playerinfo[i].score+=score[j];
+                   
 
                     if(j+1 == this._banker){
                         // this.btn_bar.emit('setbetnum',{num:this._bankerbet +=score[j] });
@@ -721,6 +746,7 @@ cc.Class({
             else return 4;
         }else return seat;
     },
+   
 /**
     for(let i=1;i<5;i++){        
         for(let j=1;j<13;j++){

@@ -62,9 +62,10 @@ cc.Class({
             if(data[3]==null ){
                 this.ErrorTip(data[4]);
             }else{
+                global.GetRoomInfo(data[3][0]);
                 global.playerinfo =new Array();               
-                global.playerinfo.push(data[3]);
-                //global.roominfo = data[3];
+                global.playerinfo.push( global.GetPlayerInfo(data[3][1]));
+                
                 cc.director.loadScene('table');    
             }
         break;
@@ -84,9 +85,10 @@ cc.Class({
                     this.ErrorTip(data[4]);
                 }else{
                     global.playerinfo =new Array();
-                    for(let i in data[3])
-                        global.playerinfo.push(data[3][i]);
-                    //global.roominfo = data[3];
+                    global.GetRoomInfo(data[3][0]);
+                    for(let i in data[3][1])
+                        global.playerinfo.push( global.GetPlayerInfo(data[3][1][i]));
+                        
                     cc.director.loadScene('table');    
                 }
             break;

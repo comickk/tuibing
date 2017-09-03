@@ -6,13 +6,18 @@ cc.Class({
         img_load:cc.Node,
 
         sdklog:cc.Label,
+        win_login:cc.Node,
         //----------------
         _wintip:cc.Node,
+
+        _lastname:'',
+        _lastpass:'',
     },
 
     // use this for initialization
     onLoad: function () {
         this._super();
+        cc.director.setDisplayStats( false);
         global.anysdk = require('PluginAnySdk').Init();       
 
        //获取socket
@@ -28,14 +33,33 @@ cc.Class({
         }
 
         this.node.on('getauthcode',this.GetAuthCode,this);        
+
+        this.node.on('idlogin',function(event){
+
+            this._lastname = event.detail.name;
+            
+            if(event.detail.noitpsw)
+                this._lastpass = event.detail.psw;
+            else
+                this._lastpass = '';
+
+            var arg ='user_name='+event.detail.name;//this._lastnick;
+            arg += '&user_pass='+event.detail.psw;//this._lastpass;  
+            this.Send(arg);  
+        },this);
     },
 
     
     Btn_Login:function(event,customEventData)
     {   
-        var arg ='user_name='+customEventData;//this._lastnick;
-        arg += '&user_pass='+'123456';//this._lastpass;  
-        this.Send(arg);                               
+        // var arg ='user_name='+customEventData;//this._lastnick;
+        // arg += '&user_pass='+'123456';//this._lastpass;  
+        // this.Send(arg);          
+    },
+
+    Btn_IDLogin:function(){
+        this.win_login.active = true;
+
     },
 
     Btn_Exit:function(){
@@ -63,6 +87,9 @@ cc.Class({
                 }else{                    
                     cc.log('login success!');
                     cc.log(s.data);
+                    //存储本次登录账号
+                    cc.sys.localStorage.setItem('loginname', self._lastname);
+                    cc.sys.localStorage.setItem('loginpass', self._lastpass);
                     self.node.emit('getauthcode',{  code:s.data[0],server:s.data[1]});
                                                   //  nick:self._loginnick,
                                                   //  pass:self._loginpass});
