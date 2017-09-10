@@ -2,14 +2,14 @@
   "appKey": "D3246CAC-A4D9-1FF4-3C3F-40CEDBE886A9",
   "appSecret": "d39df56f9bd69743c85f818446081249",
   "excludeScenes": [],
-  "includeAnySDK": false,
+  "includeAnySDK": true,
   "includeSdk": [
     "anysdk"
   ],
   "inlineSpriteFrames": true,
   "inlineSpriteFrames_native": true,
   "mergeStartScene": false,
-  "oauthLoginServer": "",
+  "oauthLoginServer": "http://118.190.89.153/client/user/da426e6076be11e71d1a29fa785dd421",
   "optimizeHotUpdate": true,
   "orientation": {
     "landscapeLeft": true,

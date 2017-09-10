@@ -25,16 +25,36 @@ cc.Class({
        _type:CardType.HEAP,
        _seat:CardSeat.TABLE,       
        _value:0,        
+
+       _isshow:false,
+       _offx:0,
+       _cardimg:cc.spriteFrame,
     }, 
 
     // use this for initialization
     onLoad: function () {
         this.node.on('deal',function(event){
-            this._seat = event.detail.seat;
-            this.node.runAction(  cc.moveTo(0.8,event.detail.x,event.detail.y)); 
+           // this._seat = event.detail.seat;
+            this._offx = event.detail.offx;
+            var len = cc.pDistance(this.node.position,cc.v2(event.detail.x,event.detail.y))/700;
+            if(event.detail.spf != null){
+                this._isshow = true;
+                this._cardimg = event.detail.spf;
+                var ShowCard = cc.callFunc( function(){
+                    this.getComponent(cc.Sprite).spriteFrame = this._cardimg;
+                    this.node.x += this._offx;
+                },this );
+                this.node.runAction(  cc.sequence( cc.moveTo(len,event.detail.x,event.detail.y),
+                                                   cc.delayTime(1),
+                                                    ShowCard     ));     
+            }
+            else
+                this.node.runAction(  cc.moveTo(len,event.detail.x,event.detail.y));             
         },this);
 
         this.node.on('show',function(event){
+            if(this._isshow) return;
+            this._isshow = true;
             this.getComponent(cc.Sprite).spriteFrame = event.detail.img;
             this.node.x += event.detail.x;
         },this);

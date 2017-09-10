@@ -7,6 +7,9 @@ cc.Class({
 
         sdklog:cc.Label,
         win_login:cc.Node,
+
+
+       // headimg:cc.Sprite,
         //----------------
         _wintip:cc.Node,
 
@@ -47,6 +50,16 @@ cc.Class({
             arg += '&user_pass='+event.detail.psw;//this._lastpass;  
             this.Send(arg);  
         },this);
+
+
+
+        // var self = this;
+        // var remoteUrl = "http://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoDA8HqHL3ZNz3jcQhf6aAryIdZ1j8Bh75TPTpoScMpODMsBa3mVBbQGDFxoajZiaF2JV9p8JHQXBQ/0.jpg";
+        // cc.loader.load({url: remoteUrl, type: 'jpg'}, function (err,tex) {
+        //     //self.headimg.spriteFrame = tex ;
+        //     cc.log(tex)
+        // });
+        
     },
 
     
@@ -54,7 +67,9 @@ cc.Class({
     {   
         // var arg ='user_name='+customEventData;//this._lastnick;
         // arg += '&user_pass='+'123456';//this._lastpass;  
-        // this.Send(arg);          
+        // this.Send(arg);  
+        
+        global.anysdk.login();
     },
 
     Btn_IDLogin:function(){
@@ -115,10 +130,10 @@ cc.Class({
                 global.socket.SendMsg(1001);                 
             break;
             case 1002:
-                if(data[3]==null){
+                if(data[1]==null){
                     cc.log('self info error!');
                 }else{
-                    global.selfinfo = data[3];
+                    global.selfinfo = data[1];
                     cc.director.loadScene('room');    
                 }              
             break;

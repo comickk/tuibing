@@ -34,12 +34,14 @@ cc.Class({
 
     Btn_Continue:function(){
        
+        this.unscheduleAllCallbacks();
         this.layout.removeAllChildren();
         this.game.emit('nextgame');
         this.Hide();
     },
     Btn_Exit:function(){
         
+        this.unscheduleAllCallbacks();
         this.layout.removeAllChildren();
         this.game.emit('nextgame');
         this.Hide();

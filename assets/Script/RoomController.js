@@ -57,14 +57,24 @@ cc.Class({
 
     MsgHandle:function(data){
         cc.log(data);
+        if(data[4]!=null) {
+            //错误处理
+            switch(data[4]){
+                case 'MUST_BE_QUIT':
+                    global.socket.SendMsg(3005);
+                    cc.log('--------------');
+                    break;
+            }
+            return;
+        }
         switch(data[0]){            
             case 3002:    //创建一个房间
-            if(data[3]==null ){
+            if(data[1]==null ){
                 this.ErrorTip(data[4]);
             }else{
-                global.GetRoomInfo(data[3][0]);
+                global.GetRoomInfo(data[1][0]);
                 global.playerinfo =new Array();               
-                global.playerinfo.push( global.GetPlayerInfo(data[3][1]));
+                global.playerinfo.push( global.GetPlayerInfo(data[1][1]));
                 
                 cc.director.loadScene('table');    
             }
@@ -81,13 +91,13 @@ cc.Class({
                 // status:0
                 // user_id:"9c012a33aa8b4ecc8aaf20ea149a6f25"
                 // user_name:"mega"
-                if(data[3]==null ){
+                if(data[1]==null ){
                     this.ErrorTip(data[4]);
                 }else{
                     global.playerinfo =new Array();
-                    global.GetRoomInfo(data[3][0]);
-                    for(let i in data[3][1])
-                        global.playerinfo.push( global.GetPlayerInfo(data[3][1][i]));
+                    global.GetRoomInfo(data[1][0]);
+                    for(let i in data[1][1])
+                        global.playerinfo.push( global.GetPlayerInfo(data[1][1][i]));
                         
                     cc.director.loadScene('table');    
                 }

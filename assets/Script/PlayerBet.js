@@ -15,6 +15,8 @@ cc.Class({
 
         _type:1,
         _bankerbet:0,
+
+        _method:0,
        // _showbetnum:false,
     },
 
@@ -24,11 +26,28 @@ cc.Class({
 
         this.node.on('showbtn',function(event){ this.playerbet.active = true;  
             this.betslider.progress =0;
+            this._method =event.detail.method;
             this._bankerbet = event.detail.bet;
         },this);
 
-        this.node.on('showbankerbtn',function(){ this.bankbet.active = true;  },this);     
+        this.node.on('showbankerbtn',function(event){ 
+            this._method =event.detail.method;
+            this.bankbet.active = true; 
+         },this);     
+
         this.node.on('autobet',this.AutoBet,this); 
+        this.node.on('rest',function(){
+            this.bankbtn1.interactable = true;
+            this.bankbtn2.interactable = true;
+            this.bankbtn3.interactable = true;
+        },this);
+
+        this.node.on('hidebankerbtn',function(event){
+            if(event.detail.bet >0)  this.bankbtn1.interactable = false;
+            if(event.detail.bet >200)  this.bankbtn2.interactable = false;
+            if(event.detail.bet >300)  this.bankbtn3.interactable = false;
+            this.bankbet.active = false; 
+        },this);
     },
     
     SetBetNum:function(){       
@@ -52,7 +71,7 @@ cc.Class({
                 this.betnum.string = 10;
         }
         this.betnum.node.opacity=0;
-        require('Global').socket.SendMsg(5019,this.betnum.string-0); 
+        require('Global').socket.SendMsg(this._method,this.betnum.string-0); 
         this.playerbet.active = false;
     },
 
@@ -75,7 +94,7 @@ cc.Class({
                 this.bankbtn3.interactable = false;
             break;
         }
-        require('Global').socket.SendMsg(5017,bet);        
+        require('Global').socket.SendMsg(this._method,bet);        
         this.bankbet.active = false;
     },
 

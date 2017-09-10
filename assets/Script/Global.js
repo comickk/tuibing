@@ -9,6 +9,7 @@ var Global = function(){
    
     Global.prototype.socket = null;
     Global.prototype.anysdk = null;
+    Global.prototype.ac = null;
 
     Global.prototype.wintip = null;
     //场景管理类-------------------  
@@ -40,8 +41,8 @@ var Global = function(){
         var player = {};
         var i=0;
         player.id = data[i++];
-        player.nick = data[i++];
         player.seat = data[i++];
+        player.nick = data[i++];
         player.headurl = data[i];
         player.score = 0;
         return player;
