@@ -13,5 +13,7 @@ cc.Class({
 
         this.nick.string = global.selfinfo.nickname;
         this.gold.string = '0';
+        if(global.selfinfo.headimg!= null)
+            this.head.spriteFrame =global.selfinfo.headimg;
     },
 });

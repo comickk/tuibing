@@ -45,6 +45,8 @@ var Global = function(){
         player.nick = data[i++];
         player.headurl = data[i];
         player.score = 0;
+        player.score_count=0;
+        player.bet=0;
         return player;
     }
 

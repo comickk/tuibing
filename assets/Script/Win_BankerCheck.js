@@ -4,19 +4,19 @@ cc.Class({
     properties: {
         game:cc.Node,
         timer:cc.Label,
-        _timelen:20,
+        _timelen:10,
     },
 
     // use this for initialization
     onEnable:function(){
         this._super();
-        this._timelen =20;
+        this._timelen =10 ;
 
         this.schedule(function(){
             this.timer.string = this._timelen--;
             if(this._timelen < 0) 
                 this.TimeOut();
-        },1,20,0);
+        },1,10,0);
     },
 
     Btn_Continue:function(){
@@ -30,7 +30,8 @@ cc.Class({
 
         this.unscheduleAllCallbacks();
 
-        require('Global').socket.SendMsg(5071,0);//回复是否续庄
+        this.game.emit('bankerexit');
+        //require('Global').socket.SendMsg(5071,0);//回复是否续庄
         this.Hide();
     },
 

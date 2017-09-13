@@ -22,7 +22,7 @@ cc.Class({
         this.node.on('bankerbet',this.BankerBet,this);
         this.node.on('clearbet',this.ClearBet,this);
         this.node.on('setbetnum',function(event){  
-            this.betnum.string = this._betstr+event.detail.num;
+            this.betnum.string = this._betstr+Number(event.detail.num-0);
         },this);
     },
 
@@ -33,10 +33,21 @@ cc.Class({
     SetPlayerInfo:function(event){
         //cc.log(event.detail);
         var msg = event.detail;
-        //头像
-        //
+        
         this.nick.string = msg.nick;
         this.score.string = msg.score;
+
+        //头像
+        if(event.detail.head !== null){
+            this.head.node.active = true;
+            var that = this;   
+            
+            cc.loader.load({url: event.detail.head, type: 'jpg'}, function (err,tex) {               
+                if(!err){                      
+                    that.head.SpriteFrame = new cc.SpriteFrame(tex);                    
+                } 
+            });
+        }
     },
 
     PlayerBet:function(event){
@@ -47,7 +58,7 @@ cc.Class({
     BankerBet:function(event){
         this._betstr = '锅底:';
         this.betnum.node.active = true;
-        this.betnum.string = this._betstr + event.detail.num;
+        this.betnum.string = this._betstr + Number(event.detail.num-0);
     },
     ClearBet:function(){
         this.betnum.node.active = false;

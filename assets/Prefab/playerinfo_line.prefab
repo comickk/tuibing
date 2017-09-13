@@ -159,7 +159,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "94fd9cd4-6c54-4f11-a625-38a61293d741"
     },
     "fileId": "91c20ki6qhJU585Uaj3kc+8",
     "sync": false
@@ -230,7 +230,7 @@
     "_actualFontSize": 24,
     "_fontSize": 24,
     "_lineHeight": 24,
-    "_enableWrapText": true,
+    "_enableWrapText": false,
     "_N$file": null,
     "_isSystemFontUsed": true,
     "_spacingX": 0,
@@ -246,7 +246,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "94fd9cd4-6c54-4f11-a625-38a61293d741"
     },
     "fileId": "f45c4/PqstLAK00kP/ivWb4",
     "sync": false
@@ -333,7 +333,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "94fd9cd4-6c54-4f11-a625-38a61293d741"
     },
     "fileId": "e1f3avoGoNFhosvliv1FEN/",
     "sync": false
@@ -388,7 +388,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "94fd9cd4-6c54-4f11-a625-38a61293d741"
     },
     "fileId": "27759TgQBVG1bnTE38Tjwsf",
     "sync": false

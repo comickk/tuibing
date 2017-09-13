@@ -48,10 +48,13 @@ cc.Class({
 
     Btn_Start:function(){  
         
+        if(this.fund.string =='')
+            this.fund.string ='999';       
+        cc.log(this.fund.string)
         var data =   JSON.stringify({
               group_name: this.roomname.string,
               visitor_count: this._membernum-4,  // n个钓鱼人
-              round_count:  this._maxround,  // n圈
+              round_count:  this._maxround,  // n圈              
               fund: Number(this.fund.string),  // 组局基金
         });          
 

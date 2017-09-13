@@ -6,6 +6,7 @@ cc.Class({
        
         playernick:cc.Label,
         playergold:cc.Label,
+        playerhead:cc.Sprite,
 
         popbg:cc.Node,
         win_create:cc.Node,
@@ -24,10 +25,22 @@ cc.Class({
         
         this.playernick.string = global.selfinfo.nickname;
         this.playergold.string ='0';
+
+        if(global.selfinfo.headimg!= null)
+            this.playerhead.spriteFrame = global.selfinfo.headimg;
     },
 
     Btn_Back:function(){
         global.socket.Close(true);
+
+        // var poplayer = cc.find('PopWinLayer');
+        // if(cc.isValid(poplayer))          
+        //     cc.game.removePersistRootNode (poplayer);
+           
+        // var ac = cc.find('AudioController');
+        // if(cc.isValid(ac))          
+        //      cc.game.removePersistRootNode (ac);
+
         cc.director.loadScene('login');
     },
 
@@ -96,8 +109,12 @@ cc.Class({
                 }else{
                     global.playerinfo =new Array();
                     global.GetRoomInfo(data[1][0]);
-                    for(let i in data[1][1])
-                        global.playerinfo.push( global.GetPlayerInfo(data[1][1][i]));
+                    for(let i in data[1][1]){
+                        var player =global.GetPlayerInfo(data[1][1][i]);
+                        // if(player.headurl !== null)
+                        //     player.headurl = "http://"+global.socket.URL+"/client/user/avatar?id="+player.id;
+                        global.playerinfo.push( player);  
+                    }
                         
                     cc.director.loadScene('table');    
                 }

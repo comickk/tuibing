@@ -19,7 +19,10 @@ cc.Class({
         var score = event.detail.score;
         this.nick.string = score.nick;
         this.gold.string = score.gold;
-        this.score.string = score.score;
+        this.score.string = score.score_count;
+
+        if(!cc.isValid(score.card)) return;
+
         var point=0;
         if(score.card[0] == score.card[1])//对子       
             point = '对'+score.card[0] ;       

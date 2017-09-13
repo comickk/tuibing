@@ -15,6 +15,7 @@ cc.Class({
 
         _type:1,
         _bankerbet:0,
+        _selfseat:0,
 
         _method:0,
        // _showbetnum:false,
@@ -28,6 +29,7 @@ cc.Class({
             this.betslider.progress =0;
             this._method =event.detail.method;
             this._bankerbet = event.detail.bet;
+            this._selfseat = event.detail.seat;
         },this);
 
         this.node.on('showbankerbtn',function(event){ 
@@ -42,10 +44,14 @@ cc.Class({
             this.bankbtn3.interactable = true;
         },this);
 
+        this.node.on('hidebtn',function(){
+            this.playerbet.active = false;
+        },this);
+
         this.node.on('hidebankerbtn',function(event){
             if(event.detail.bet >0)  this.bankbtn1.interactable = false;
-            if(event.detail.bet >200)  this.bankbtn2.interactable = false;
-            if(event.detail.bet >300)  this.bankbtn3.interactable = false;
+            if(event.detail.bet >2000)  this.bankbtn2.interactable = false;
+            if(event.detail.bet >3000)  this.bankbtn3.interactable = false;
             this.bankbet.active = false; 
         },this);
     },
@@ -60,7 +66,7 @@ cc.Class({
     },
 
     Btn_PlayerBet:function(event,customEventData){
-        cc.log(this.betnum.string);
+       // cc.log(this.betnum.string);
         //var bet = Number(customEventData);
         //if(bet ==1) 
         if(customEventData =='2'){
@@ -71,24 +77,24 @@ cc.Class({
                 this.betnum.string = 10;
         }
         this.betnum.node.opacity=0;
-        require('Global').socket.SendMsg(this._method,this.betnum.string-0); 
+        require('Global').socket.SendMsg(this._method,JSON.stringify([this.betnum.string-0,this._selfseat])); 
         this.playerbet.active = false;
     },
 
     Btn_BankerBet:function(event,customEventData){ 
         cc.log(customEventData);
-        var bet =200;
+        var bet =2000;
         switch(customEventData){
-            case '200':
+            case '2000':
                 this.bankbtn1.interactable = false;
             break;
-            case '300':
-                bet =300;
+            case '3000':
+                bet =3000;
                 this.bankbtn1.interactable = false;
                 this.bankbtn2.interactable = false;
             break;
-            case '500':
-                bet = 500;
+            case '5000':
+                bet = 5000;
                 this.bankbtn1.interactable = false;
                 this.bankbtn2.interactable = false;
                 this.bankbtn3.interactable = false;
@@ -101,17 +107,17 @@ cc.Class({
     AutoBet:function(){
         if(this.bankbet.active){
             if(this.bankbtn1.interactable){
-                this.Btn_BankerBet(null,'200');
+                this.Btn_BankerBet(null,'2000');
                 return;
             }
 
             if(this.bankbtn2.interactable){
-                this.Btn_BankerBet(null,'200');
+                this.Btn_BankerBet(null,'3000');
                 return;
             }
 
             if(this.bankbtn3.interactable){
-                this.Btn_BankerBet(null,'200');
+                this.Btn_BankerBet(null,'5000');
                 return;
             }
 

@@ -8,8 +8,9 @@ cc.Class({
         sdklog:cc.Label,
         win_login:cc.Node,
 
-
-       // headimg:cc.Sprite,
+        defaluthead:cc.SpriteFrame,
+        log:cc.Label,
+        //headimg:cc.Sprite,
         //----------------
         _wintip:cc.Node,
 
@@ -21,7 +22,7 @@ cc.Class({
     onLoad: function () {
         this._super();
         cc.director.setDisplayStats( false);
-        global.anysdk = require('PluginAnySdk').Init();       
+        global.anysdk = require('PluginAnySdk').Init(this);           
 
        //获取socket
        global.socket = require('Socket');
@@ -50,15 +51,6 @@ cc.Class({
             arg += '&user_pass='+event.detail.psw;//this._lastpass;  
             this.Send(arg);  
         },this);
-
-
-
-        // var self = this;
-        // var remoteUrl = "http://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoDA8HqHL3ZNz3jcQhf6aAryIdZ1j8Bh75TPTpoScMpODMsBa3mVBbQGDFxoajZiaF2JV9p8JHQXBQ/0.jpg";
-        // cc.loader.load({url: remoteUrl, type: 'jpg'}, function (err,tex) {
-        //     //self.headimg.spriteFrame = tex ;
-        //     cc.log(tex)
-        // });
         
     },
 
@@ -68,7 +60,9 @@ cc.Class({
         // var arg ='user_name='+customEventData;//this._lastnick;
         // arg += '&user_pass='+'123456';//this._lastpass;  
         // this.Send(arg);  
-        
+      
+       // this.WXLogin('oGYue1LK1U5DPUyslPSSl_JpIGvE');
+
         global.anysdk.login();
     },
 
@@ -84,7 +78,39 @@ cc.Class({
     Event_Back:function(){
          global.PopWinTip(1,'确定要退出吗？',function(){  cc.game.end();   }); 
     },
+    
+    WXLogin:function(id)
+    {
+        var arg ='user_name='+id;
+        arg += '&user_pass=123456';  
 
+        var self = this;
+        
+        var url ='http://'+global.socket.URL +'/client/user/loginWX?';
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {            
+            if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status < 400)) {
+                var response = xhr.responseText;               
+                var s = JSON.parse(response);  
+
+               
+                if(cc.isValid(s.error)){
+                    //错误信息
+                    //cc.log('login error!');
+                    cc.log(s);                   
+                }else{                    
+                    cc.log('login success!');
+                   
+                                        
+                    self.node.emit('getauthcode',{  code:s.data[0],server:s.data[1]});                                                  
+                }
+            }                            
+        };        
+        xhr.open("POST", url+arg, true);
+        xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded;");
+        xhr.send(arg); 
+    },
+        
     Send:function(arg){
         
         var self = this;
@@ -133,7 +159,10 @@ cc.Class({
                 if(data[1]==null){
                     cc.log('self info error!');
                 }else{
-                    global.selfinfo = data[1];
+                    global.selfinfo = data[1]; 
+                    global.selfinfo.headimg = null;                   
+                   // global.selfinfo.headimg = this.GetHeadImg(global.selfinfo.id);
+                   this.GetHeadImg(global.selfinfo.id);
                     cc.director.loadScene('room');    
                 }              
             break;
@@ -143,7 +172,28 @@ cc.Class({
         }
     },
 
+    setlog:function(msg){
+        this.log.string += msg;
+    },
+
     CloseSocket:function(){		
 		cc.log('socket close');
     },    
+
+    GetHeadImg:function(id){
+         var self = this;
+        //var remoteUrl = "http://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoDA8HqHL3ZNz3jcQhf6aAryIdZ1j8Bh75TPTpoScMpODMsBa3mVBbQGDFxoajZiaF2JV9p8JHQXBQ/0.jpg";
+        var remoteUrl ="http://"+global.socket.URL+"/client/user/avatar?id="+id;
+        var frame= null;
+        cc.loader.load({url: remoteUrl, type: 'jpg'}, function (err,tex) {
+           // cc.log('--------wair  load url img');
+            if(!err){
+                
+                global.selfinfo.headimg = new cc.SpriteFrame(tex); 
+                //cc.log(global.selfinfo);
+            }//else
+              //  global.selfinfo.headimg = self.defaluthead;  
+        });
+        //return frame;
+    }
 });

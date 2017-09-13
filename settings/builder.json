@@ -9,7 +9,7 @@
   "inlineSpriteFrames": true,
   "inlineSpriteFrames_native": true,
   "mergeStartScene": false,
-  "oauthLoginServer": "http://118.190.89.153/client/user/da426e6076be11e71d1a29fa785dd421",
+  "oauthLoginServer": "http://118.190.149.221/client/user/da426e6076be11e71d1a29fa785dd421",
   "optimizeHotUpdate": true,
   "orientation": {
     "landscapeLeft": true,
