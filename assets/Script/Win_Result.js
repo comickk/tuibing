@@ -37,7 +37,7 @@ cc.Class({
        
         this.unscheduleAllCallbacks();
         this.layout.removeAllChildren();
-        this.game.emit('nextgame');
+        //this.game.emit('nextgame');
         this.Hide();
     },
     Btn_Exit:function(){

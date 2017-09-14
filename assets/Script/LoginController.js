@@ -51,7 +51,9 @@ cc.Class({
             arg += '&user_pass='+event.detail.psw;//this._lastpass;  
             this.Send(arg);  
         },this);
-        
+        //
+        cc.log(JSON.parse(cc.sys.localStorage.getItem('record')));
+        //
     },
 
     
@@ -61,9 +63,10 @@ cc.Class({
         // arg += '&user_pass='+'123456';//this._lastpass;  
         // this.Send(arg);  
       
-       // this.WXLogin('oGYue1LK1U5DPUyslPSSl_JpIGvE');
+        this.WXLogin('oGYue1LK1U5DPUyslPSSl_JpIGvE');
 
-        global.anysdk.login();
+        //global.anysdk.Share(10000);//分亨链接，在链接的网页中打开APP
+        //global.anysdk.login();
     },
 
     Btn_IDLogin:function(){
@@ -152,17 +155,25 @@ cc.Class({
         cc.log(data);   
         switch(data[0]){            
             case 1:      
-                this.img_load.active = true;
-                global.socket.SendMsg(1001);                 
+                //比较版本
+                if(data[1] > global.ver )
+                    global.PopWinTip(1,'有新版本可更新！',function(){  cc.game.end();   });
+                else{
+                    this.img_load.active = true;
+                    global.socket.SendMsg(1001);  
+                }               
             break;
             case 1002:
                 if(data[1]==null){
                     cc.log('self info error!');
                 }else{
                     global.selfinfo = data[1]; 
-                    global.selfinfo.headimg = null;                   
-                   // global.selfinfo.headimg = this.GetHeadImg(global.selfinfo.id);
-                   this.GetHeadImg(global.selfinfo.id);
+
+                    if(  cc.isValid( global.selfinfo.headimg)) 
+                        this.GetHeadImg(global.selfinfo.id);      
+                    else
+                        global.selfinfo.headimg =null;              
+
                     cc.director.loadScene('room');    
                 }              
             break;
@@ -181,19 +192,15 @@ cc.Class({
     },    
 
     GetHeadImg:function(id){
+        
          var self = this;
         //var remoteUrl = "http://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoDA8HqHL3ZNz3jcQhf6aAryIdZ1j8Bh75TPTpoScMpODMsBa3mVBbQGDFxoajZiaF2JV9p8JHQXBQ/0.jpg";
         var remoteUrl ="http://"+global.socket.URL+"/client/user/avatar?id="+id;
         var frame= null;
-        cc.loader.load({url: remoteUrl, type: 'jpg'}, function (err,tex) {
-           // cc.log('--------wair  load url img');
-            if(!err){
-                
-                global.selfinfo.headimg = new cc.SpriteFrame(tex); 
-                //cc.log(global.selfinfo);
-            }//else
-              //  global.selfinfo.headimg = self.defaluthead;  
-        });
-        //return frame;
+        cc.loader.load({url: remoteUrl, type: 'jpg'}, function (err,tex) {          
+            if(!err){                
+                global.selfinfo.headimg = new cc.SpriteFrame(tex);                
+            }
+        });        
     }
 });

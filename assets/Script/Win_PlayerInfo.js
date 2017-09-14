@@ -16,7 +16,7 @@ cc.Class({
         this.node.on('popin',this.PopIn,this);        
         this.node.on('updateplayer',this.UpdatePlayer,this);
 
-        this.fund.string = require('Global').roominfo.fund;
+        this.fund.string = '0 / '+require('Global').roominfo.fund;
     },
 
     PopOut:function(){
@@ -44,9 +44,13 @@ cc.Class({
             var line = cc.instantiate(this.playerline);
             line.parent = this.playerlist;
             line.setPosition(0,0);
-            line.emit('setinfo',{nick:data[i].nick,score:data[i].score,head:data[i].headurl});           
+            if(!cc.isValid( data[i].headurl))
+                line.emit('setinfo',{nick:data[i].nick,score:data[i].score,head:null}); 
+            else
+                line.emit('setinfo',{nick:data[i].nick,score:data[i].score,head:data[i].id});           
         }
 
+        this.fund.string = require('Global').roominfo.curr_fund +'/'+require('Global').roominfo.fund;
     },
 
     // called every frame, uncomment this function to activate update callback

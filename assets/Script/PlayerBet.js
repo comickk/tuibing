@@ -62,7 +62,10 @@ cc.Class({
             this.betnum.node.opacity =255;         
 
         //this.betnum.string = this._bankerbet/10+ this._bankerbet/10 * Math.round(9*this.betslider.progress);
-        this.betnum.string = 10 * Math.round(this._bankerbet/10*this.betslider.progress);
+        
+        this.betnum.string = 100 * Math.round(this._bankerbet/100*this.betslider.progress);
+        if(this.betnum.string-0 > this._bankerbet)
+            this.betnum.string = this._bankerbet;        
     },
 
     Btn_PlayerBet:function(event,customEventData){
@@ -73,8 +76,8 @@ cc.Class({
             this.betnum.string =this._bankerbet+'';
         }else{
             var bet = Number(this.betnum.string);
-            if( bet > this._bankerbet || bet < 10)
-                this.betnum.string = 10;
+            if( bet > this._bankerbet || bet < 100)
+                this.betnum.string = 100;
         }
         this.betnum.node.opacity=0;
         require('Global').socket.SendMsg(this._method,JSON.stringify([this.betnum.string-0,this._selfseat])); 
@@ -127,7 +130,7 @@ cc.Class({
         }
 
         if(this.playerbet.active){
-            this.betnum.string='10';
+            this.betnum.string='100';
             this.Btn_PlayerBet(null,'1');
         }
     },

@@ -5,6 +5,8 @@ cc.Class({
       head:cc.Sprite,
       nick:cc.Label,
       score:cc.Label,
+
+      _headimg:cc.SpriteFrame,
     },
 
     // use this for initialization
@@ -17,11 +19,17 @@ cc.Class({
         this.nick.string = event.detail.nick;
         this.score.string = event.detail.score;
 
-        if(event.detail.head !== null){
+         //头像
+         if(this._headimg == null && event.detail.head !== null){
+            this.head.node.active = true;
+            var headurl = "http://"+ require('Global').socket.URL+"/client/user/avatar?id="+event.detail.head;
+
             var that = this;            
-            cc.loader.load({url: event.detail.head, type: 'jpg'}, function (err,tex) {               
-                if(!err){                                 
-                    that.head.SpriteFrame = new cc.SpriteFrame(tex);                    
+           
+            cc.loader.load({url:headurl, type: 'jpg'}, function (err,tex) {                        
+                if(!err){                                     
+                    that._headimg = new cc.SpriteFrame(tex);
+                    that.head.spriteFrame = that._headimg;
                 } 
             });
         }

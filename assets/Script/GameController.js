@@ -148,19 +148,19 @@ cc.Class({
             this.UpdatePlayer(global.playerinfo);
 
         cc.Canvas.instance.node.on('touchstart', this.Touch,this);
-        this.node.on('nextgame',function(){
-                switch(this._status){
-                    case 'AS_WAIT_FOR_NEXT_ROUND':
+        // this.node.on('nextgame',function(){
+        //         switch(this._status){
+        //             case 'AS_WAIT_FOR_NEXT_ROUND':
                         
-                        this.NextGame();
-                    break;
-                    case 'AS_WAIT_FOR_NEXT_ROUND2':
+        //                 this.NextGame();
+        //             break;
+        //             case 'AS_WAIT_FOR_NEXT_ROUND2':
                    
-                        this.RestGame();
-                        this.RecoveryChip(true);
-                    break;                   
-                }
-        },this);
+        //                 this.RestGame();
+        //                 this.RecoveryChip(true);
+        //             break;                   
+        //         }
+        // },this);
 
         this.node.on('bankercontinue',function(){
             if(this._status =='AS_WAIT_FOR_BANKER_CONTINUE_BET'){
@@ -170,8 +170,8 @@ cc.Class({
             }
             if(this._status =='AS_WAIT_FOR_BANKER_CONTINUE'){
                 //发送续庄
-                this.RestGame();  
-                this.CreatCard();
+                //this.RestGame();  
+                //this.CreatCard();
                 global.socket.SendMsg(5011,true);
             }
         },this);
@@ -182,9 +182,9 @@ cc.Class({
             }
             if(this._status =='AS_WAIT_FOR_BANKER_CONTINUE'){
                 //发送下庄
-                this.RestGame();
-                this.RecoveryChip(true);
-                this.CreatCard();
+               // this.RestGame();
+                //this.RecoveryChip(true);
+               // this.CreatCard();
                 global.socket.SendMsg(5011,false);
             }
         },this);
@@ -253,7 +253,8 @@ cc.Class({
             case 3010://重新上线
             break;
 
-            case 5002://玩家已准备 
+            case 5002://游戏逻辑处理
+           
                 this._status = msg[0];
                 switch(this._status){
                     case 'AS_WAIT_FOR_PLAYER_DICE':
@@ -281,6 +282,7 @@ cc.Class({
                         var seat = msg[2]; 
                         
                         this._bankerbetchance = 3;
+                        this.btn_bar.emit('rest');
                         this.RecoveryChip(true);
 
                         if(!this._isrushcard)
@@ -336,7 +338,7 @@ cc.Class({
                     case 'AS_WAIT_FOR_PLAYER_BET':
                         //等待闲家下注
                         var len = msg[1];
-                        if(msg.length>2){
+                        if(msg.length>3){
                             var seat = msg[2];
                             var bet = msg[3];
                             var betseat = msg[4];
@@ -392,25 +394,45 @@ cc.Class({
                     case 'AS_WAIT_FOR_NEXT_ROUND2'://庄破产下庄 结算                        
                     case 'AS_WAIT_FOR_NEXT_ROUND'://正常结算
                         var len = msg[1];
-                        this.Result(msg[2],len-5);  
+                        this.Result(msg[2],len-5,false);  
+                        global.roominfo.curr_fund = msg[3];                        
                     break;     
 
                     case 'AS_GAMEOVER':
-                        this.SaveGame();
+                        this.SaveGame(msg[2]);
                         global.PopWinTip(2,'该房间游戏已结束，请退出选择其它房间开始游戏',this.ExitGame ); 
                     break;
 
                     case 'AS_WAIT_FOR_BANKER_CONTINUE'://询问是否续庄
                         //重置游戏
                         var len = msg[1];                        
-                        this.WaitForBankerContinue(len-5);      
-                        //this.CreatCard();                 
+                        this.WaitForBankerContinue(len-5);
                     break;   
 
                     case 'AS_WAIT_FOR_BANKER_CONTINUE_BET':
                         var len  =msg[1];
                         this.WaitForBankerContinueBet(len-5);
-                    break;                    
+                    break;       
+                    
+                    case 'AS_DELAY_NEXT_ROUND':
+                        var len  = msg[1];
+                        var round = msg[2];
+                        var hand = msg[3];
+                        var next_status = msg[4];
+                        switch(next_status){
+                            case 'AS_WAIT_FOR_PLAYER_BET'://等待继续打色子
+                                this.NextGame();
+                            break;
+                            case 'AS_WAIT_FOR_BANKER_CONTINUE'://等待续庄
+                                this.RestGame();          
+                                this.CreatCard();                      
+                            break;
+                            case 'AS_WAIT_FOR_BANKER_BET'://下家做庄，等待下锅底
+                                this.RestGame();
+                                this.RecoveryChip(true);
+                            break;
+                        }
+                    break;
                 }
             break;
 
@@ -652,9 +674,9 @@ cc.Class({
                     break;}
 
             if(!ishave) {
-                //设置 头像地址               
-               // if(player.headurl !== null)
-               //     player.headurl = "http://"+global.socket.URL+"/client/user/avatar?id="+player.id;
+                // //设置 头像地址               
+                // if(player.headurl !== null)
+                //     player.headurl = "http://"+global.socket.URL+"/client/user/avatar?id="+player.id;
                 global.playerinfo.push(  player  );
             }            
         }              
@@ -675,8 +697,10 @@ cc.Class({
         for(let i in data)    {                   
             if( data[i].seat==null  ) continue;
             if( data[i].seat>0){
-               // cc.log(data[i]);
-                this.GetPlayerSeat( data[i].seat).emit('setplayerinfo',{nick:data[i].nick,score:data[i].score,head:data[i].headurl}); 
+                if(cc.isValid(data[i].headurl))
+                    this.GetPlayerSeat( data[i].seat).emit('setplayerinfo',{nick:data[i].nick,score:data[i].score,head:data[i].id}); 
+                else
+                this.GetPlayerSeat( data[i].seat).emit('setplayerinfo',{nick:data[i].nick,score:data[i].score,head:null}); 
             }    
         }      
 
@@ -732,11 +756,7 @@ cc.Class({
            
         }else{
             var that = this;
-            this.StartTimer(len,'等待庄家续庄',function(){
-                cc.log('---player  rest---');
-                that.RestGame();
-                that.CreatCard();
-            });  
+            this.StartTimer(len,'等待庄家续庄');  
         }
     },
    
@@ -945,7 +965,7 @@ cc.Class({
         if(data[1]==0) return;
         //划拔筹码--------------------------------
         //----------------------------------------
-        cc.log('     锅底=     '+ this._bankerbet.toString());
+       // cc.log('     锅底=     '+ this._bankerbet.toString());
         this.GetPlayerSeat( this._banker).emit('setbetnum',{num:this._bankerbet });
         if(score>0){//庄赢
             this.Settlement(bankerseat ,playerseat,score);//win loser num
@@ -1037,7 +1057,7 @@ cc.Class({
     },   
 
     //结算----------------------
-    Result:function(data,len){
+    Result:function(data,len,isfinish){
         cc.log('------游戏结算--------');
        
         for( let i in data){
@@ -1052,11 +1072,15 @@ cc.Class({
             
             for(let j in global.playerinfo){
                 if(data[i].id == global.playerinfo[j].id){
-                    cc.log(global.playerinfo[j]);
-                    var score = global.playerinfo[j].score_count;
-                    global.playerinfo[j].score = data[i].score_count;
-                    data[i].score_count -= score;   
-                    global.playerinfo[j].score_count = global.playerinfo[j].score;
+                    //cc.log(global.playerinfo[j]);
+                    if(isfinish){                        
+                        global.playerinfo[j].score = data[i].score_count;                        
+                    }else{
+                        var score = global.playerinfo[j].score_count;
+                        global.playerinfo[j].score = data[i].score_count;
+                        data[i].score_count -= score;   
+                        global.playerinfo[j].score_count = global.playerinfo[j].score;
+                    }
                     break;                 
                 }
             }
@@ -1130,7 +1154,7 @@ cc.Class({
             }
         }       
         
-        this.btn_bar.emit('rest');
+        //this.btn_bar.emit('rest');
     },   
    
     //设置 计时器
@@ -1184,8 +1208,8 @@ cc.Class({
 
     //微信分享
     Btn_Share:function(){
-
-       // global.anysdk.share(global.roominfo.id);
+       //分亨链接，在链接的网页中打开APP
+        global.anysdk.Share(global.selfinfo.nickname,global.roominfo.id);
     },
 
     //按钮   准备
@@ -1262,8 +1286,15 @@ cc.Class({
         }        
     },
 
-    SaveGame:function(){
+    SaveGame:function(data){
         //记录本局比赛
+        cc.log(data);
+        var record = JSON.parse(cc.sys.localStorage.getItem('record'));
+        if(record == null)
+           record = [];
+       
+        record.unshift(data);
+        cc.sys.localStorage.setItem('record', JSON.stringify(record));
     },
 
     PlaySound:function(id){

@@ -1,7 +1,7 @@
 var Global = function(){  
 
 }
-
+    Global.prototype.ver =104;
     //  玩家数据类  
     Global.prototype.selfinfo = null;
     Global.prototype.roominfo = null;
@@ -34,6 +34,8 @@ var Global = function(){
         room.act_status= data[i++];
         room.act_seat= data[i++];
         
+        room.curr_fund=0;   //当前基金数
+
         this.roominfo = room;
     }
 

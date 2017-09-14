@@ -7,6 +7,7 @@ cc.Class({
        score:cc.Label,
        betnum:cc.Label,
 
+       _headimg:cc.SpriteFrame,
        _seat:1,    
        _betstr:'',   
     },
@@ -24,27 +25,32 @@ cc.Class({
         this.node.on('setbetnum',function(event){  
             this.betnum.string = this._betstr+Number(event.detail.num-0);
         },this);
+       
+        this._headimg = null;
     },
 
     Clear:function(){
         this.nick.string = '等待加入';
         this.score.string = '';
     },
-    SetPlayerInfo:function(event){
-        //cc.log(event.detail);
+    SetPlayerInfo:function(event){       
+       
         var msg = event.detail;
         
         this.nick.string = msg.nick;
         this.score.string = msg.score;
 
         //头像
-        if(event.detail.head !== null){
+        if(this._headimg == null && msg.head !== null){
             this.head.node.active = true;
-            var that = this;   
-            
-            cc.loader.load({url: event.detail.head, type: 'jpg'}, function (err,tex) {               
-                if(!err){                      
-                    that.head.SpriteFrame = new cc.SpriteFrame(tex);                    
+            var headurl = "http://"+ require('Global').socket.URL+"/client/user/avatar?id="+msg.head;
+
+            var that = this;               
+           
+            cc.loader.load({url:headurl, type: 'jpg'}, function (err,tex) {                        
+                if(!err){                                     
+                    that._headimg = new cc.SpriteFrame(tex);                       
+                    that.head.spriteFrame = that._headimg;                    
                 } 
             });
         }

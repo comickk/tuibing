@@ -13,6 +13,7 @@ cc.Class({
     },
 
     SetRecord:function(event){
+        
         cc.log(event.detail);
     }
     

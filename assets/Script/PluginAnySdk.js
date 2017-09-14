@@ -225,6 +225,7 @@ PluginSdk.prototype.onUserResult=function (code, msg) {
 PluginSdk.prototype.onShareResult = function(code, msg){
     cc.log("share result, resultcode:"+code+", msg: "+msg);
    // this.msg = "share result, resultcode:"+code+", msg: "+msg;
+   this.controller.setlog("share result, resultcode:"+code+", msg: "+msg);
     switch ( code ) {
         case anysdk.ShareResultCode.kShareSuccess:            
             //do something
@@ -241,12 +242,12 @@ PluginSdk.prototype.onShareResult = function(code, msg){
     }
 }
 
-PluginSdk.prototype.Share = function(roomid){
+PluginSdk.prototype.Share = function(user,roomid){
 
     if (!this.sharePlugin) return;
     var info = {
        title:"极速推饼好友邀请",
-       text:"房间密码"+roomid,
+       text:user+"邀请您一起来玩(极速推饼),房间密码:"+roomid,
        url:"http://sharesdk.cn",
        mediaType:"0",
        shareTo:"0",
