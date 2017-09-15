@@ -261,6 +261,26 @@ PluginSdk.prototype.Share = function(user,roomid){
     this.sharePlugin.share(info);
 }
 
+PluginSdk.prototype.ShareImg = function(img){
+    
+        if (!this.sharePlugin) return;
+        var info = {
+           title:"极速推饼结算",
+           //text:user+"邀请您一起来玩(极速推饼),房间密码:"+roomid,
+           url:"http://sharesdk.cn",
+           mediaType:"1",
+           shareTo:"0",
+           imagePath:img,
+    
+           //titleUrl : "http://sharesdk.cn",
+          // site : "ShareSDK", 
+           //siteUrl : "http://sharesdk.cn",
+           description:"极速推饼",
+         }
+    
+        this.sharePlugin.share(info);
+    }
+
 //var plugin = new PluginSdk();  
 //module.exports =plugin.Init();
 module.exports = new PluginSdk();  

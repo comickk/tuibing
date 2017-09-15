@@ -24,7 +24,7 @@ cc.Class({
         global.socket.controller = this;
         
         this.playernick.string = global.selfinfo.nickname;
-        this.playergold.string ='0';
+        this.playergold.string = global.selfinfo.gold_count;
 
         if(global.selfinfo.headimg!= null)
             this.playerhead.spriteFrame = global.selfinfo.headimg;

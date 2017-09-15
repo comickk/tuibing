@@ -6,6 +6,10 @@ cc.Class({
         playerlist:cc.Node,
        
         fund:cc.Label,
+
+        roundnum:cc.Label,
+        playernum:cc.Label,
+        roomname:cc.Label,
     },
 
     // use this for initialization
@@ -16,7 +20,10 @@ cc.Class({
         this.node.on('popin',this.PopIn,this);        
         this.node.on('updateplayer',this.UpdatePlayer,this);
 
-        this.fund.string = '0 / '+require('Global').roominfo.fund;
+        this.fund.string = '0 / '+require('Global').roominfo.fund;      
+        this.roundnum.string = '最大圈数:'+require('Global').roominfo.round_count;
+        this.playernum.string = '钓鱼人数:'+require('Global').roominfo.visitor_count;
+        this.roomname.string =  '房间名称:'+require('Global').roominfo.name;
     },
 
     PopOut:function(){

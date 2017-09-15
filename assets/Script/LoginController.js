@@ -52,8 +52,9 @@ cc.Class({
             this.Send(arg);  
         },this);
         //
-        cc.log(JSON.parse(cc.sys.localStorage.getItem('record')));
-        //
+       // cc.log(JSON.parse(cc.sys.localStorage.getItem('record')));
+       //cc.sys.localStorage.removeItem('record')
+        //       
     },
 
     
@@ -63,10 +64,12 @@ cc.Class({
         // arg += '&user_pass='+'123456';//this._lastpass;  
         // this.Send(arg);  
       
-        this.WXLogin('oGYue1LK1U5DPUyslPSSl_JpIGvE');
+        //this.WXLogin('oGYue1LK1U5DPUyslPSSl_JpIGvE');
 
         //global.anysdk.Share(10000);//分亨链接，在链接的网页中打开APP
-        //global.anysdk.login();
+
+        //this.captureScreen();
+        global.anysdk.login();
     },
 
     Btn_IDLogin:function(){
@@ -202,5 +205,5 @@ cc.Class({
                 global.selfinfo.headimg = new cc.SpriteFrame(tex);                
             }
         });        
-    }
+    },    
 });

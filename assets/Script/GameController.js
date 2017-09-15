@@ -75,6 +75,8 @@ cc.Class({
         btn_ready:cc.Node,
         banker:cc.Node,
 
+        finalresult:cc.Node,
+
 
        _cards:[cc.Node],
        _cp:0,//牌 索引 指针
@@ -114,6 +116,9 @@ cc.Class({
 
        //是否有白板
        isHaveBan:true,
+
+
+       _final_result:null,
        
        //_canvas:cc.Canvas,       
     },
@@ -198,6 +203,13 @@ cc.Class({
         this.btn_ready.active = !this._isfisher;
         global.socket.controller = this;
         
+
+        // this._final_result = [ {id:'1',nick:'xxx',score:100,gold:10,seat:1},
+        // {id:'2',nick:'xxx',score:100,gold:10,seat:2},
+        // {id:'3',nick:'xxx',score:100,gold:10,seat:3},
+        // {id:'4',nick:'xxx',score:100,gold:10,seat:4}
+        //  ];
+        // global.PopWinTip(2,'该房间游戏已结束',this.ShowFinalResult ); 
     },
    
     onDestroy:function(){
@@ -400,7 +412,7 @@ cc.Class({
 
                     case 'AS_GAMEOVER':
                         this.SaveGame(msg[2]);
-                        global.PopWinTip(2,'该房间游戏已结束，请退出选择其它房间开始游戏',this.ExitGame ); 
+                        global.PopWinTip(2,'该房间游戏已结束',this.ShowFinalResult ); 
                     break;
 
                     case 'AS_WAIT_FOR_BANKER_CONTINUE'://询问是否续庄
@@ -1202,6 +1214,14 @@ cc.Class({
          this.win_playerlist.emit('popin');         
     },
 
+
+    ShowFinalResult:function( ){
+       var game = global.socket.controller;
+       //cc.log(game);
+        game.finalresult.active = true;
+        game.finalresult.emit('setresult',{data:game._final_result});
+    },
+
     //按钮事件------------------------------------------------
     //-------------------------------------------------------
     //-------------------------------------------------------
@@ -1289,14 +1309,58 @@ cc.Class({
     SaveGame:function(data){
         //记录本局比赛
         cc.log(data);
+        this._final_result = data;
         var record = JSON.parse(cc.sys.localStorage.getItem('record'));
         if(record == null)
            record = [];
-       
-        record.unshift(data);
+
+        //生成战绩记录，
+        //取得头像和自己的分数
+        var line=[];
+        var d = new Date();        
+        var score=0;
+        for(let i in data){
+            if(data[i].id == global.selfinfo.id){
+                line.unshift(data[i].id);
+                score = data[i].score;
+            }else
+                line.push(data[i].id);
+        }
+        line.push(score);
+        line.unshift(d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate());       
+        record.unshift(line);
         cc.sys.localStorage.setItem('record', JSON.stringify(record));
+        //line   2017-8-19  id1  id2  id3   id4  id5   ……………………  1000
     },
 
+    captureScreen: function () {
+        //注意，EditBox，VideoPlayer，Webview 等控件无法被包含在截图里面
+       //因为这是 OpenGL 的渲染到纹理的功能，上面提到的控件不是由引擎绘制的
+
+        if(CC_JSB) {
+            //如果待截图的场景中含有 mask，请使用下面注释的语句来创建 renderTexture
+            // var renderTexture = cc.RenderTexture.create(1280,640, cc.Texture2D.PIXEL_FORMAT_RGBA8888, gl.DEPTH24_STENCIL8_OES);
+            var cn = cc.Canvas.instance.node;
+            
+            var renderTexture = cc.RenderTexture.create(cn.width,cn.height);
+
+            //实际截屏的代码
+            renderTexture.begin();
+            //this.richText.node 是我们要截图的节点，如果要截整个屏幕，可以把 this.richText 换成 Canvas 切点即可
+            //this.richText.node._sgNode.visit();
+
+            cn._sgNode.visit();
+
+            renderTexture.end();
+            renderTexture.saveToFile("demo.png",cc.ImageFormat.PNG, true, function () {
+               // cc.log("capture screen successfully!");
+               global.anysdk.ShareImg(jsb.fileUtils.getWritablePath()+'demo.png');
+            });
+           
+            //打印截图路径
+            cc.log(jsb.fileUtils.getWritablePath());
+        }
+    },
     PlaySound:function(id){
         global.ac.emit(id);
     }

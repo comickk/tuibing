@@ -9,7 +9,7 @@ cc.Class({
         fund_tip:cc.Node,
 
         _membernum:4,//会员人数
-        _maxround:4,//最大圈数
+        _maxround:1,//最大圈数
     },
 
     // use this for initialization
@@ -49,10 +49,10 @@ cc.Class({
     Btn_Start:function(){  
         
         if(this.fund.string =='')
-            this.fund.string ='999';       
-        cc.log(this.fund.string)
+            this.fund.string ='0';       
+        cc.log(this.roomname.string)
         var data =   JSON.stringify({
-              group_name: this.roomname.string,
+              name: this.roomname.string,
               visitor_count: this._membernum-4,  // n个钓鱼人
               round_count:  this._maxround,  // n圈              
               fund: Number(this.fund.string),  // 组局基金
