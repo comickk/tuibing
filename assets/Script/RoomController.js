@@ -41,6 +41,7 @@ cc.Class({
         // if(cc.isValid(ac))          
         //      cc.game.removePersistRootNode (ac);
 
+        global.anysdk.logout();
         cc.director.loadScene('login');
     },
 
@@ -68,6 +69,10 @@ cc.Class({
         this.win_enter.active = true;
     },   
 
+    Btn_Shop:function(){
+        global.PopWinTip(2,'暂未开放，敬请期待');  
+    },
+
     MsgHandle:function(data){
         cc.log(data);
         if(data[4]!=null) {
@@ -75,15 +80,16 @@ cc.Class({
             switch(data[4]){
                 case 'MUST_BE_QUIT':
                     global.socket.SendMsg(3005);
-                    cc.log('--------------');
+                   // cc.log('--------------');
                     break;
             }
+            this.ErrorTip(data[4]);
             return;
         }
         switch(data[0]){            
             case 3002:    //创建一个房间
             if(data[1]==null ){
-                this.ErrorTip(data[4]);
+               // this.ErrorTip(data[4]);
             }else{
                 global.GetRoomInfo(data[1][0]);
                 global.playerinfo =new Array();               
@@ -91,7 +97,8 @@ cc.Class({
                 
                 cc.director.loadScene('table');    
             }
-        break;
+            break;
+            
             case 3008:     //加入一个房间
                 //cc.log(data);  
                
@@ -127,6 +134,12 @@ cc.Class({
             break;          
         }        
     },
+
+    CloseSocket:function(){       
+        global.PopWinTip(2,'与服务器的联接已断开', function(){
+            cc.director.loadScene('login');
+        });         
+     },
     
     ErrorTip:function(code){
         var msg ='';
@@ -156,9 +169,5 @@ cc.Class({
                 msg =code;   
         }
         global.PopWinTip(2,msg);  
-    },
-
-    CloseSocket:function(){
-        cc.log('socket close');
     },
 });

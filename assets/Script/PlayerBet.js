@@ -80,12 +80,14 @@ cc.Class({
                 this.betnum.string = 100;
         }
         this.betnum.node.opacity=0;
-        require('Global').socket.SendMsg(this._method,JSON.stringify([this.betnum.string-0,this._selfseat])); 
+        var bets= [0,0,0,0,0];
+        bets[this._selfseat]= this.betnum.string-0;
+        require('Global').socket.SendMsg(this._method,JSON.stringify( bets)); 
         this.playerbet.active = false;
     },
 
     Btn_BankerBet:function(event,customEventData){ 
-        cc.log(customEventData);
+        //cc.log(customEventData);
         var bet =2000;
         switch(customEventData){
             case '2000':

@@ -51,10 +51,11 @@ cc.Class({
             var line = cc.instantiate(this.playerline);
             line.parent = this.playerlist;
             line.setPosition(0,0);
-            if(!cc.isValid( data[i].headurl))
-                line.emit('setinfo',{nick:data[i].nick,score:data[i].score,head:null}); 
-            else
-                line.emit('setinfo',{nick:data[i].nick,score:data[i].score,head:data[i].id});           
+
+           // if(!cc.isValid( data[i].headurl))
+            //    line.emit('setinfo',{nick:data[i].nick,score:data[i].score,head:null}); 
+            //else
+                line.emit('setinfo',{nick:data[i].nick,score:data[i].score,head:data[i].headimg});           
         }
 
         this.fund.string = require('Global').roominfo.curr_fund +'/'+require('Global').roominfo.fund;

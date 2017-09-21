@@ -1,9 +1,9 @@
  
 function gamesocket(){}
     
-    //gamesocket.prototype.URL = '192.168.2.77';      //内测服
+    gamesocket.prototype.URL = '192.168.2.77';     //内测服
     //gamesocket.prototype.URL = '118.190.89.153';  //测试服
-    gamesocket.prototype.URL = '118.190.149.221';  // 正式服
+    //gamesocket.prototype.URL = '118.190.149.221';  // 正式服
     gamesocket.prototype.ws=null;   
     gamesocket.prototype.controller =null;
     gamesocket.prototype.heartid = 0;
@@ -22,7 +22,7 @@ function gamesocket(){}
         this.ws.onopen = function(evt){
          
             var p = [
-                102,
+                105,
                 1,
                 Math.random() * 1000,
                 new Date().getTime(),
@@ -89,7 +89,7 @@ function gamesocket(){}
         //     timestamp: new Date().getTime()           
         // };
         var p = [
-            102,
+            104,
             type,
             Math.random() * 1000,
             new Date().getTime(),
@@ -130,7 +130,7 @@ function gamesocket(){}
         var self = this;
         var id = setInterval(function(){
              var p = [
-                102,
+                104,
                 666,                       
                 Math.random() * 1000,
                 new Date().getTime() ,

@@ -1,7 +1,7 @@
 var Global = function(){  
 
 }
-    Global.prototype.ver =104;
+    Global.prototype.ver =105;
     //  玩家数据类  
     Global.prototype.selfinfo = null;
     Global.prototype.roominfo = null;
@@ -48,8 +48,60 @@ var Global = function(){
         player.headurl = data[i];
         player.score = 0;
         player.score_count=0;
-        player.bet=0;
+        player.bet=[0,0,0,0,0];
+
+        player.headimg = null;
+
+        //cc.log(player.headurl);
+        if(player.headurl !== null)
+            this.GetPlayerHeadImg(player); 
+        
         return player;
+    }
+
+    Global.prototype.GetPlayerByID = function(id){
+
+        for(let i in this.playerinfo){
+            if(this.playerinfo[i].id == id)
+                return this.playerinfo[i];
+        }
+        return null;
+    }
+
+    Global.prototype.GetPlayerBySeat = function(seat){
+        for(let i in this.playerinfo){
+            if(this.playerinfo[i].seat == seat)
+                return this.playerinfo[i];
+        }
+        return null;
+    }
+
+    Global.prototype.GetPlayerHeadImg = function(player){
+
+        var id = player.id;
+        var self = this;
+        //var remoteUrl ="http://118.190.149.221/client/user/avatar?id="+id;
+        var remoteUrl ="http://"+self.socket.URL+"/client/user/avatar?id="+id;
+
+        //var frame= null;
+        // cc.loader.onProgress = function (completedCount, totalCount, item) { 
+        //      var progress =0;
+        //      progress =  ( (completedCount+1) / (totalCount+1) ).toFixed(2);
+        //      cc.log(progress + '%');
+        //  }
+        //cc.log(remoteUrl);
+        cc.loader.load({url: remoteUrl, type: 'jpg'}, function (err,tex) {          
+            if(!err){                
+               player.headimg = new cc.SpriteFrame(tex);   
+               //cc.log('---头像加载完了');             
+               //return frame;
+            }else{
+                //cc.log(err);
+                player.headimg= null;
+               // return null;
+            }
+        });   
+       // return frame;
     }
 
     //弹出窗口管理------------------

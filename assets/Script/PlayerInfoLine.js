@@ -19,20 +19,23 @@ cc.Class({
         this.nick.string = event.detail.nick;
         this.score.string = event.detail.score;
 
-         //头像
-         if(this._headimg == null && event.detail.head !== null){
-            this.head.node.active = true;
-            var headurl = "http://"+ require('Global').socket.URL+"/client/user/avatar?id="+event.detail.head;
 
-            var that = this;            
+        if(event.detail.head != null)
+            this.head.spriteFrame = event.detail.head;
+         //头像
+        //  if(this._headimg == null && event.detail.head !== null){
+        //     this.head.node.active = true;
+        //     var headurl = "http://"+ require('Global').socket.URL+"/client/user/avatar?id="+event.detail.head;
+
+        //     var that = this;            
            
-            cc.loader.load({url:headurl, type: 'jpg'}, function (err,tex) {                        
-                if(!err){                                     
-                    that._headimg = new cc.SpriteFrame(tex);
-                    that.head.spriteFrame = that._headimg;
-                } 
-            });
-        }
+        //     cc.loader.load({url:headurl, type: 'jpg'}, function (err,tex) {                        
+        //         if(!err){                                     
+        //             that._headimg = new cc.SpriteFrame(tex);
+        //             that.head.spriteFrame = that._headimg;
+        //         } 
+        //     });
+        // }
     },
 
     // called every frame, uncomment this function to activate update callback

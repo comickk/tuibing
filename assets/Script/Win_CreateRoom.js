@@ -20,7 +20,7 @@ cc.Class({
 
     onEnable:function(){
         this._super();
-        this.roomname.string = '未命名房间';
+        this.roomname.string =  require('Global').selfinfo.nickname+'的房间';
         this.maxmember.string = '';
         this.maxmember.string = this._membernum;
         this.fund.string = '';
@@ -50,7 +50,7 @@ cc.Class({
         
         if(this.fund.string =='')
             this.fund.string ='0';       
-        cc.log(this.roomname.string)
+      //cc.log(this.roomname.string)
         var data =   JSON.stringify({
               name: this.roomname.string,
               visitor_count: this._membernum-4,  // n个钓鱼人

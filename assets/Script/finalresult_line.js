@@ -17,7 +17,7 @@ cc.Class({
             
             var data = event.detail.data;
             
-            cc.log(data);
+            //cc.log(data);
             if(data.id.length<28){
                 //不是微信号
             }else{
@@ -29,8 +29,12 @@ cc.Class({
                 this.node.color = new cc.Color(255, 202, 109);
 
             this.nick.string = data.nick;
-            this.gold.string = data.gold;
+            
             this.score.string = data.score;
+
+            this.gold.string = data.fund;//组局基金
+            //if(data.fund-0 > 0 )
+             //   this.score.string +='('+ data.fund +')';
 
         },this);
 

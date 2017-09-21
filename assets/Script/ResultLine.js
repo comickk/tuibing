@@ -18,8 +18,13 @@ cc.Class({
        // cc.log(event.detail);
         var score = event.detail.score;
         this.nick.string = score.nick;
-        this.gold.string = score.gold;
+       
         this.score.string = score.score_count;
+
+        this.gold.string = score.fund;//gold 显示组局基金
+
+        // if( score.fund-0 > 0)
+        //    this.score.string +='('+ score.fund +')';
 
         if(!cc.isValid(score.card)) return;
 

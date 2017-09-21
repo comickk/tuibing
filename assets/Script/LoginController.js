@@ -15,7 +15,7 @@ cc.Class({
         _wintip:cc.Node,
 
         _lastname:'',
-        _lastpass:'',
+        _lastpass:'',      
     },
 
     // use this for initialization
@@ -55,6 +55,9 @@ cc.Class({
        // cc.log(JSON.parse(cc.sys.localStorage.getItem('record')));
        //cc.sys.localStorage.removeItem('record')
         //       
+
+        //防锁屏（未测试）
+        //cc.Device.setKeepScreenOn(); 
     },
 
     
@@ -98,15 +101,13 @@ cc.Class({
             if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status < 400)) {
                 var response = xhr.responseText;               
                 var s = JSON.parse(response);  
-
                
                 if(cc.isValid(s.error)){
                     //错误信息
                     //cc.log('login error!');
                     cc.log(s);                   
                 }else{                    
-                    cc.log('login success!');
-                   
+                    cc.log('login success!');                   
                                         
                     self.node.emit('getauthcode',{  code:s.data[0],server:s.data[1]});                                                  
                 }
@@ -133,7 +134,7 @@ cc.Class({
                     cc.log('login error!');
                 }else{                    
                     cc.log('login success!');
-                    cc.log(s.data);
+                    //cc.log(s.data);
                     //存储本次登录账号
                     cc.sys.localStorage.setItem('loginname', self._lastname);
                     cc.sys.localStorage.setItem('loginpass', self._lastpass);
@@ -171,11 +172,11 @@ cc.Class({
                     cc.log('self info error!');
                 }else{
                     global.selfinfo = data[1]; 
-
-                    if(  cc.isValid( global.selfinfo.headimg)) 
-                        this.GetHeadImg(global.selfinfo.id);      
-                    else
-                        global.selfinfo.headimg =null;              
+                    //cc.log(global.selfinfo);
+                    //if(  cc.isValid( global.selfinfo.headimg)) 
+                    this.GetHeadImg(global.selfinfo.id);      
+                   // else
+                   //     global.selfinfo.headimg =null;              
 
                     cc.director.loadScene('room');    
                 }              
@@ -198,12 +199,22 @@ cc.Class({
         
          var self = this;
         //var remoteUrl = "http://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoDA8HqHL3ZNz3jcQhf6aAryIdZ1j8Bh75TPTpoScMpODMsBa3mVBbQGDFxoajZiaF2JV9p8JHQXBQ/0.jpg";
-        var remoteUrl ="http://"+global.socket.URL+"/client/user/avatar?id="+id;
+        
+        //var remoteUrl ="http://118.190.149.221/client/user/avatar?id="+id;
+         var remoteUrl ="http://"+global.socket.URL+"/client/user/avatar?id="+id;
         var frame= null;
         cc.loader.load({url: remoteUrl, type: 'jpg'}, function (err,tex) {          
             if(!err){                
                 global.selfinfo.headimg = new cc.SpriteFrame(tex);                
-            }
+            }else
+                global.selfinfo.headimg = null;
         });        
     },    
+
+
+    // test1:function(){
+    //     this.btn[2].setSiblingIndex(this.btn[2].getSiblingIndex()+1); 
+    //同级索引，值大的在上层
+    // },
+    
 });
