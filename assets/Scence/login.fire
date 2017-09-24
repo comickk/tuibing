@@ -6080,9 +6080,7 @@
       {
         "__uuid__": "f1d43e42-9d10-482e-8a26-40d6b2be2b73"
       }
-    ],
-    "_volume": 1,
-    "_bgmid": 0
+    ]
   },
   {
     "__type__": "cc.Node",
@@ -7290,7 +7288,7 @@
     "_scaleY": 1,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": 302,
+      "x": 312,
       "y": 19
     },
     "_skewX": 0,
@@ -7507,7 +7505,7 @@
     "_N$file": null,
     "_isSystemFontUsed": true,
     "_spacingX": 0,
-    "_N$string": "提示信息--------------------------------------------------------",
+    "_N$string": "提示信息---------------------------------------",
     "_N$horizontalAlign": 0,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",

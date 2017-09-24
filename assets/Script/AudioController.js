@@ -14,9 +14,8 @@ cc.Class({
         bgm:[cc.AudioClip],
 
         sound:[cc.AudioClip],//
-       
-        _volume:1,
-        _bgmid:0,
+        
+        
     },
 
     // use this for initialization
@@ -40,27 +39,27 @@ cc.Class({
 
        
          this.node.on('createcard',function(){
-             cc.audioEngine.play(this.sound[SoundName.CREATECARD], false,this._volume);
+             cc.audioEngine.play(this.sound[SoundName.CREATECARD], false,global.vol_sound);
          },this);
          this.node.on('dealcard',function(){
-            cc.audioEngine.play(this.sound[SoundName.DEALCARD], false,this._volume);
+            cc.audioEngine.play(this.sound[SoundName.DEALCARD], false,global.vol_sound);
         },this);
 
         this.node.on('dice',function(){
-            cc.audioEngine.play(this.sound[SoundName.DICE], false,this._volume);
+            cc.audioEngine.play(this.sound[SoundName.DICE], false,global.vol_sound);
         },this);
 
         this.node.on('bet',function(){
-            cc.audioEngine.play(this.sound[SoundName.BET], false,this._volume);
+            cc.audioEngine.play(this.sound[SoundName.BET], false,global.vol_sound);
         },this);
 
         this.node.on('clock',function(){
-            cc.audioEngine.play(this.sound[SoundName.CLOCK], false,this._volume);
+            cc.audioEngine.play(this.sound[SoundName.CLOCK], false,global.vol_sound);
         },this);
 
 
-        if(this._bgmid==0)
-            this._bgmid=cc.audioEngine.play(this.bgm[0], true, this._volume*0.7);
+        if(global.bgmid==0)
+            global.bgmid=cc.audioEngine.play(this.bgm[0], true, global.vol_music);
         
     },
 

@@ -1,9 +1,9 @@
  
 function gamesocket(){}
     
-    gamesocket.prototype.URL = '192.168.2.77';     //内测服
+    //gamesocket.prototype.URL = '192.168.2.77';     //内测服
     //gamesocket.prototype.URL = '118.190.89.153';  //测试服
-    //gamesocket.prototype.URL = '118.190.149.221';  // 正式服
+    gamesocket.prototype.URL = '118.190.149.221';  // 正式服
     gamesocket.prototype.ws=null;   
     gamesocket.prototype.controller =null;
     gamesocket.prototype.heartid = 0;
@@ -65,13 +65,14 @@ function gamesocket(){}
             console.log('client notified socket has closed.', evt);
             clearInterval( self.heartid);
             
-            self.controller.CloseSocket();
+            //self.controller.CloseSocket();
 
-            // if(self.selfclose)
-            //     self.controller.CloseSocket();
-            // else            
+            if(!self.selfclose)//          非正常断线提示 
+                 self.controller.CloseSocket();
+            //else            //  非正常断的，重联
             //     self.controller.ResConnect();
-            // self.selfclose = false;
+
+             self.selfclose = false;
         };     
 
         this.ws.onerror = function(evt){

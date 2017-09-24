@@ -20,7 +20,12 @@ cc.Class({
 
     onEnable:function(){
         this._super();
-        this.roomname.string =  require('Global').selfinfo.nickname+'的房间';
+        var nick = require('Global').selfinfo.nickname;
+        
+        if(nick.length >7)
+            nick = nick.slice(0,7);
+
+        this.roomname.string =  nick +'的房间';
         this.maxmember.string = '';
         this.maxmember.string = this._membernum;
         this.fund.string = '';

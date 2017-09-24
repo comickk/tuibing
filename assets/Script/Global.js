@@ -11,6 +11,10 @@ var Global = function(){
     Global.prototype.anysdk = null;
     Global.prototype.ac = null;
 
+    Global.prototype.bgmid=0;
+    Global.prototype.vol_music=0.7;
+    Global.prototype.vol_sound=1;
+
     Global.prototype.wintip = null;
     //场景管理类-------------------  
     // var game=null;//游戏主控
@@ -106,6 +110,7 @@ var Global = function(){
 
     //弹出窗口管理------------------
     Global.prototype.PopWinTip=function(type,msg,callback){
+        
         if(!this.wintip)  return;
         this.wintip.active = true;
         this.wintip.emit('settip',{type:type,msg:msg,callback:callback });

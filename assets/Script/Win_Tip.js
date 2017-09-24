@@ -17,7 +17,9 @@ cc.Class({
 
     // use this for initialization
     onLoad: function () {
-        this._super();
+
+        this._super();        
+
         this._scene = '';
         this.node.on('settip',function(event){ //type: 弹窗类型2（提示信息） 1确认关闭 msg:
 
@@ -40,16 +42,17 @@ cc.Class({
            }
         },this);   
 
-        
+
         this.btn_cancel.on('touchend',function(){  this.Hide();   },this);   
 
         this.btn_exit.on('touchend',function(){
             //退出程序                     
            var that = this;
            this.BtnOK();          
-        },this);
+        },this);   
 
         this.btn_accept.on('touchend',function(){ this.BtnOK() },this);
+       
     },   
 
     BtnOK:function(){      

@@ -74,6 +74,8 @@ cc.Class({
         win_bankercheck:cc.Node,
         win_fisherbet:cc.Node,
 
+        win_set:cc.Node,
+
         btn_bar:cc.Node,
         btn_ready:cc.Node,
         banker:cc.Node,
@@ -256,6 +258,7 @@ cc.Class({
                 this.UpdatePlayer(global.playerinfo);
             break;
             
+            case 1004:   //某人强退
             case 3006:      //有人退出               
                 this.DelPlayer(msg);
                 this.UpdatePlayer(global.playerinfo);
@@ -276,9 +279,12 @@ cc.Class({
                 //查找id对应的玩家
                 for(let j in global.playerinfo)
                 if(msg[0] == global.playerinfo[j].id) {
-                        this.chat.emit('chat',{ msg:msg[1],
-                                                nick: global.playerinfo[j].nick,
-                                                seat: global.playerinfo[j].seat});
+
+                  // cc.log( this.SeatTran( global.playerinfo[j].seat ) );
+
+                       this.chat.emit('chat',{ msg:msg[1],
+                                               nick: global.playerinfo[j].nick,
+                                               seat: this.SeatTran( global.playerinfo[j].seat)+1  });
                     break;}
             break;
 
@@ -978,7 +984,7 @@ cc.Class({
         }  
 
        // var actfinished = cc.callFunc( this.CreatCard,this  );
-        this.banker.setPosition(0,0);
+        this.banker.setPosition(0,55);
         this.banker.runAction(cc.sequence(  cc.scaleTo(0.2,3),
                                             cc.delayTime(0.5),
                                             cc.spawn(   cc.moveTo(0.4,pos.x,pos.y),
@@ -1389,6 +1395,11 @@ cc.Class({
 
         this.btndice.active = false;       
         this.StopTimer();
+    },
+
+    Btn_Set:function(){
+
+        this.win_set.active =true;
     },
 
     Event_Back:function(){

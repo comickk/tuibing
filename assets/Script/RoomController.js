@@ -14,12 +14,17 @@ cc.Class({
         win_record:cc.Node,
         win_life:cc.Node,
         win_member:cc.Node,
+
+        loadscene:cc.Node,
+
+        loadprog:cc.ProgressBar,
     },
 
     // use this for initialization
     onLoad: function () {
         this._super();
         this.popbg.on('touchend',function(){event.stopPropagation();});  
+        this.loadscene.on('touchend',function(){event.stopPropagation();});  
 
         global.socket.controller = this;
         
@@ -31,7 +36,7 @@ cc.Class({
     },
 
     Btn_Back:function(){
-        global.socket.Close(true);
+        
 
         // var poplayer = cc.find('PopWinLayer');
         // if(cc.isValid(poplayer))          
@@ -42,6 +47,9 @@ cc.Class({
         //      cc.game.removePersistRootNode (ac);
 
         global.anysdk.logout();
+
+        global.socket.Close(true);
+
         cc.director.loadScene('login');
     },
 
@@ -95,7 +103,8 @@ cc.Class({
                 global.playerinfo =new Array();               
                 global.playerinfo.push( global.GetPlayerInfo(data[1][1]));
                 
-                cc.director.loadScene('table');    
+                this.LoadGame();
+                //cc.director.loadScene('table');    
             }
             break;
             
@@ -123,7 +132,8 @@ cc.Class({
                         global.playerinfo.push( player);  
                     }
                         
-                    cc.director.loadScene('table');    
+                    this.LoadGame();
+                    //cc.director.loadScene('table');    
                 }
             break;
 
@@ -135,11 +145,28 @@ cc.Class({
         }        
     },
 
+    LoadGame:function(){
+        this.loadscene.active = true;
+        this.loadprog.progress=0;
+
+        var self = this;
+        cc.loader.onProgress = function (completedCount, totalCount, item) {            
+          
+           self.loadprog.progress =  ( completedCount / totalCount ).toFixed(2);           
+          // cc.log(self.loadprog.progress + '%');
+        }
+        cc.director.preloadScene('table', function () {    
+            cc.loader.onProgress = null;       
+            self.loadscene.active = false; 
+            cc.director.loadScene('table');
+        });
+    },
+
     CloseSocket:function(){       
         global.PopWinTip(2,'与服务器的联接已断开', function(){
             cc.director.loadScene('login');
         });         
-     },
+    }, 
     
     ErrorTip:function(code){
         var msg ='';
@@ -168,6 +195,7 @@ cc.Class({
             default:
                 msg =code;   
         }
-        global.PopWinTip(2,msg);  
+       
+        global.PopWinTip(2,msg);         
     },
 });

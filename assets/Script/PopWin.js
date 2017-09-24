@@ -16,7 +16,7 @@ var PopWin = cc.Class({
 
    
     onLoad: function () {
-
+        
         if(this._scale != this.node.scaleX)
             this._scale = this.node.scaleX;
 
@@ -32,8 +32,11 @@ var PopWin = cc.Class({
         // var type = arguments[0] ? arguments[0] : 0;//是否 隐藏  背景层 ，用于后续弹出其它窗口
         //this.hidebg = true;
        //this._hidetype = type;
-       if(cc.isValid(this.sound[1]))
-            cc.audioEngine.play(this.sound[1]);
+       if(cc.isValid(this.sound[1])){
+           //cc.log(require('Global').vol_sound);           
+           cc.audioEngine.play(this.sound[1],false,require('Global').vol_sound);
+           // cc.audioEngine.play(this.sound[1],false,require('Global').vol_sound);
+       }
 
        this.node.runAction( cc.sequence(cc.scaleTo(0.15,0.3,0.3),
                              cc.callFunc(function(){  this.node.active = false; },this ),
@@ -53,6 +56,7 @@ var PopWin = cc.Class({
     // },
 
     onEnable :function(){
+        
         if( cc.isValid(this.BGlayer))
             this.BGlayer.active = true;
             //this.BGlayer.color  = cc.Color.GRAY;
@@ -60,7 +64,7 @@ var PopWin = cc.Class({
         this.node.scaleX=0.5;
         this.node.scaleY=0.5;
         if(this.sound[0])
-            cc.audioEngine.play(this.sound[0]);
+            cc.audioEngine.play(this.sound[0],false,require('Global').vol_sound);
        this.node.runAction( cc.sequence(cc.scaleTo(0.12, this._scale*1.1,this._scale*1.1),cc.scaleTo(0.18,this._scale,this._scale)));      
     },
 

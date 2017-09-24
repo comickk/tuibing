@@ -40,7 +40,7 @@ cc.Class({
                 //不是 WX ID
                 img.spriteFrame = this.defaultimg;
             }else{
-                //this.GetHeadImg(img,data[i]);
+                this.GetHeadImg(img,data[i]);
             }
         }
        

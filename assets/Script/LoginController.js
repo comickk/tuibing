@@ -58,6 +58,21 @@ cc.Class({
 
         //防锁屏（未测试）
         //cc.Device.setKeepScreenOn(); 
+
+        //模拟添加战绩数据
+        //cc.sys.localStorage.removeItem('record');
+
+      //  var record = JSON.parse(cc.sys.localStorage.getItem('record'));
+      //  if(record == null)
+    //    var  record = [];
+        // record.push(['2017-9-21','1','1','1','1',3578]);
+        // record.push(['2017-9-20','1','1','1','1',2000]);
+    
+        // record.push(['2017-9-17','1','1','1','1',1027]);
+        // record.push(['2017-9-16','1','1','1','1',-200]);
+        // record.push(['2017-9-15','1','1','1','1',-15305]);
+        // cc.sys.localStorage.setItem('record', JSON.stringify(record));
+
     },
 
     
@@ -75,9 +90,10 @@ cc.Class({
         global.anysdk.login();
     },
 
+    //账号登录按钮
     Btn_IDLogin:function(){
+       
         this.win_login.active = true;
-
     },
 
     Btn_Exit:function(){
@@ -161,7 +177,7 @@ cc.Class({
             case 1:      
                 //比较版本
                 if(data[1] > global.ver )
-                    global.PopWinTip(1,'有新版本可更新！',function(){  cc.game.end();   });
+                    global.PopWinTip(2,'有新版本可更新！',function(){  cc.game.end();   });
                 else{
                     this.img_load.active = true;
                     global.socket.SendMsg(1001);  
@@ -174,7 +190,8 @@ cc.Class({
                     global.selfinfo = data[1]; 
                     //cc.log(global.selfinfo);
                     //if(  cc.isValid( global.selfinfo.headimg)) 
-                    this.GetHeadImg(global.selfinfo.id);      
+                    if(global.selfinfo.id.length >= 28)
+                        this.GetHeadImg(global.selfinfo.id);      
                    // else
                    //     global.selfinfo.headimg =null;              
 
