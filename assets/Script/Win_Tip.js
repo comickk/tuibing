@@ -23,21 +23,21 @@ cc.Class({
         this._scene = '';
         this.node.on('settip',function(event){ //type: 弹窗类型2（提示信息） 1确认关闭 msg:
 
-            if(cc.isValid(event.detail.callback))
-                this._ok_callback = event.detail.callback;
+            if(cc.isValid(event.callback))
+                this._ok_callback = event.callback;
              
-            if(event.detail.type == 1){                  
+            if(event.type == 1){                  
                 this.btn_cancel.active = true;
                 this.btn_exit.active = true;
                 this.btn_accept.active = false;
                 this.tiplabel.string = '确定要退出吗？';
            }
 
-           if(event.detail.type == 2){               
+           if(event.type == 2){               
                this.btn_cancel.active = false;
                this.btn_exit.active = false;
                this.btn_accept.active = true;
-               this.tipmsg=event.detail.msg;                
+               this.tipmsg=event.msg;                
                this.tiplabel.string = this.tipmsg;
            }
         },this);   

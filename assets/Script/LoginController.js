@@ -5,11 +5,11 @@ cc.Class({
     properties: {
         img_load:cc.Node,
 
-        sdklog:cc.Label,
+        //sdklog:cc.Label,
         win_login:cc.Node,
 
         defaluthead:cc.SpriteFrame,
-        log:cc.Label,
+       // log:cc.Label,
         //headimg:cc.Sprite,
         //----------------
         _wintip:cc.Node,
@@ -21,9 +21,9 @@ cc.Class({
     // use this for initialization
     onLoad: function () {
         this._super();
-        cc.director.setDisplayStats( false);
-        global.anysdk = require('PluginAnySdk').Init(this);           
-
+        cc.debug.setDisplayStats( false);
+        global.anysdk = require('PluginAnySdk').Init(this);    
+        
        //获取socket
        global.socket = require('Socket');
        global.socket.controller = this;
@@ -40,15 +40,15 @@ cc.Class({
 
         this.node.on('idlogin',function(event){
 
-            this._lastname = event.detail.name;
+            this._lastname = event.name;
             
-            if(event.detail.noitpsw)
-                this._lastpass = event.detail.psw;
+            if(event.noitpsw)
+                this._lastpass = event.psw;
             else
                 this._lastpass = '';
 
-            var arg ='user_name='+event.detail.name;//this._lastnick;
-            arg += '&user_pass='+event.detail.psw;//this._lastpass;  
+            var arg ='user_name='+event.name;//this._lastnick;
+            arg += '&user_pass='+event.psw;//this._lastpass;  
             this.Send(arg);  
         },this);
         //
@@ -73,6 +73,21 @@ cc.Class({
         // record.push(['2017-9-15','1','1','1','1',-15305]);
         // cc.sys.localStorage.setItem('record', JSON.stringify(record));
 
+
+        //---------------------
+        // var sstr = '%5B%7B%2s啥宋德福2lastUpdateTime%22%3A%222011-10-28+9%3A39%3A41%22%2C%22smsList%22%3A%5B%7B%22liveState%22%3A%221啥h打饭';
+        // //sstr = decodeURIComponent(encodeURIComponent(sstr));
+        // console.log(sstr.length);
+        // var cpredString = pako.deflate(sstr,{to:'string'});
+        
+        // console.log(cpredString.length);
+        
+        // console.log(pako.inflate(cpredString, { to: 'string' }));   
+
+        //this.node.on('canvas-resize',function(event){cc.log('11111111111');});
+
+        cc.view.resizeWithBrowserSize(true);
+        cc.view.setOrientation(cc.macro.ORIENTATION_LANDSCAPE); 
     },
 
     
@@ -148,6 +163,7 @@ cc.Class({
                 if(cc.isValid(s.error)){
                     //错误信息
                     cc.log('login error!');
+                    cc.log(s);
                 }else{                    
                     cc.log('login success!');
                     //cc.log(s.data);
@@ -167,12 +183,12 @@ cc.Class({
 
     GetAuthCode:function(event){
       
-        global.socket.Init(event.detail.server,event.detail.code);         
+        global.socket.Init(event.server,event.code);         
         
     },   
 
     MsgHandle:function(data){               
-        cc.log(data);   
+        //cc.log(data);   
         switch(data[0]){            
             case 1:      
                 //比较版本
@@ -187,8 +203,10 @@ cc.Class({
                 if(data[1]==null){
                     cc.log('self info error!');
                 }else{
+                   // cc.log(data);
+                   // global.selfinfo = data[3]; 
                     global.selfinfo = data[1]; 
-                    //cc.log(global.selfinfo);
+                    //cc.log(global);
                     //if(  cc.isValid( global.selfinfo.headimg)) 
                     if(global.selfinfo.id.length >= 28)
                         this.GetHeadImg(global.selfinfo.id);      

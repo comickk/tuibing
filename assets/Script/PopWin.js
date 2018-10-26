@@ -2,7 +2,11 @@ var PopWin = cc.Class({
     extends: cc.Component,
 
     properties: {
-        sound:[cc.AudioClip],
+        sound:{
+            type:cc.AudioClip,
+            default:[]
+        },
+        
         BGlayer:cc.Node,    
 
         // hidebg:{

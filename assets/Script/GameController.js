@@ -78,6 +78,7 @@ cc.Class({
 
         btn_bar:cc.Node,
         btn_ready:cc.Node,
+        btn_switchseat:cc.Node,//换位按钮
         banker:cc.Node,
 
 
@@ -109,7 +110,7 @@ cc.Class({
        //
         _count:0,        
 
-        _status:0,
+        _status:'',
         _round:0,
 
         //本轮玩家的牌
@@ -210,6 +211,9 @@ cc.Class({
         this.InitNodePool();       
 
         this.btn_ready.active = !this._isfisher;
+        
+        //this.btn_switchseat.active = true;
+
         global.socket.controller = this;
         
 
@@ -235,7 +239,7 @@ cc.Class({
     },
 
     MsgHandle:function(data){
-        //cc.log(data);
+       // cc.log(data);
         if(data[4]!=null) {
             //错误处理
             switch(data[4]){
@@ -247,7 +251,7 @@ cc.Class({
         }
         var type = data[0];
         var msg =  data[1];
-        cc.log(msg);
+        //cc.log(msg);
         switch(type){            
             //case 3002:    //创建一个房间
             case 3008:     //加入一个房间         
@@ -489,6 +493,11 @@ cc.Class({
                 }
             break;
 
+            //切换座位
+            case 5018:
+
+            break;
+
             /*
             case 5016://庄选先起牌位
                 //0 id   1 seat   2  first   3  pos
@@ -602,11 +611,11 @@ cc.Class({
 
         if(seat == this._banker){
             funcname = 'bankerbet';
-            if(num ==2000)
+            if(num ==200)
                 this._bankerbetchance=2;
-            if(num == 3000)
+            if(num == 300)
                 this._bankerbetchance=1;
-            if(num == 5000)
+            if(num == 500)
                 this._bankerbetchance=0;
         }
 
@@ -654,9 +663,9 @@ cc.Class({
             if(seat != this._banker)
                 chip.getComponent(cc.Sprite).spriteFrame = this.chipimg[3];
             else{
-                if(num == 2000 )  chip.getComponent(cc.Sprite).spriteFrame = this.chipimg[0];
-                if(num == 3000 )  chip.getComponent(cc.Sprite).spriteFrame = this.chipimg[1];
-                if(num == 5000 )  chip.getComponent(cc.Sprite).spriteFrame = this.chipimg[2];
+                if(num == 200 )  chip.getComponent(cc.Sprite).spriteFrame = this.chipimg[0];
+                if(num == 300 )  chip.getComponent(cc.Sprite).spriteFrame = this.chipimg[1];
+                if(num == 500 )  chip.getComponent(cc.Sprite).spriteFrame = this.chipimg[2];
             }
         }
         
@@ -664,7 +673,7 @@ cc.Class({
         chip.setPosition(p0);  
 
         chip.name = playerid;
-        chip.tag = seat;
+        chip.seat = seat;
 
         if(isfish)
             chip.runAction(cc.moveTo(0.4,p1.x+25,p1.y-25));   
@@ -702,7 +711,7 @@ cc.Class({
           
             for(let i in chips){               
 
-                if(chips[i].name == loser && chips[i].tag == seat)                
+                if(chips[i].name == loser && chips[i].seat == seat)                
                     loser_chips = chips[i];
                
                 if(chips[i].name == winner)
@@ -720,7 +729,7 @@ cc.Class({
                     if(chips[i].name == loser)                
                         loser_chips = chips[i];
                    
-                    if(chips[i].name == winner && chips[i].tag == seat)  
+                    if(chips[i].name == winner && chips[i].seat == seat)  
                         winner_chips = chips[i];                            
                 }
 
@@ -733,8 +742,8 @@ cc.Class({
                 chip.parent = this.chiplayer;
                 chip.setPosition(loser_chips.position);  
                 chip.getComponent(cc.Sprite).spriteFrame = loser_chips.getComponent(cc.Sprite).spriteFrame;     
-                //chip.name = winner;
-                chip.tag = seat;
+                chip.name = winner_chips.name;
+                chip.seat = seat;
                 chip.setSiblingIndex(winner_chips.getSiblingIndex()-1);
                 chip.runAction(cc.moveTo(0.4,winner_chips.position)); 
             }
@@ -751,7 +760,9 @@ cc.Class({
         for(let i=0;i<l;i++){
             if(!clearbanker && chips[j].name != global.GetPlayerBySeat(this._banker).id)   
                 this._chippool.put(chips[j]); 
-            else j++;  }
+            else 
+                j++;  
+        }
       
 
         for(let i=1;i<=4;i++){
@@ -788,9 +799,13 @@ cc.Class({
     },
     //删除玩家
     DelPlayer:function(id){
+
         for(let j in global.playerinfo)
             if(id == global.playerinfo[j].id) {
-                global.playerinfo.splice(j,1);
+                if(this._status == '')                
+                    global.playerinfo.splice(j,1);
+                else
+                    global.playerinfo[j].online = false;
                 break;}
     },
 
@@ -803,7 +818,7 @@ cc.Class({
             if( data[i].seat>0){
                // if(cc.isValid(data[i].headurl))
                //cc.log(data[i].headimg);
-                    this.GetPlayerSeat( data[i].seat).emit('setplayerinfo',{nick:data[i].nick,score:data[i].score,seat:data[i].seat,head:data[i].headimg}); 
+                    this.GetPlayerSeat( data[i].seat).emit('setplayerinfo',{nick:data[i].nick,score:data[i].score,seat:data[i].seat,head:data[i].headimg,online:data[i].online}); 
                 //else
                 //    this.GetPlayerSeat( data[i].seat).emit('setplayerinfo',{nick:data[i].nick,score:data[i].score,head:null}); 
             }    
@@ -867,16 +882,27 @@ cc.Class({
    
     WaitForPlayerBet:function(len){
 
+        var minbet = 20;
+        switch(this._bankerbetchance){
+            case 0: minbet = 50;
+            break;
+            case 1:minbet =30;
+            break;
+            case 2: minbet =20;
+            break;
+        }
+
         if(this._isfisher){
             this.StartTimer(len,'请下注',0,null);
             this.win_fisherbet.active = true;
-            this.win_fisherbet.emit('setfisherbet',{bankerbet:this._bankerbet,bankerseat:this._banker,len:len});
+            this.win_fisherbet.emit('setfisherbet',{bankerbet:this._bankerbet,minbet:minbet,bankerseat:this._banker,len:len});
         }else{
             if(this._selfseat == this._banker )          
-            this.StartTimer(len,'等待闲家下注',0,null); 
-        else{
-            this.btn_bar.emit('showbtn',{bet:this._bankerbet,seat:this._selfseat,method:5009});
-            this.StartTimer(len,'请下注',0,null);}
+                this.StartTimer(len,'等待闲家下注',0,null); 
+            else{                
+                this.btn_bar.emit('showbtn',{maxbet:this._bankerbet,minbet:minbet,seat:this._selfseat,method:5009});                
+                this.StartTimer(len,'请下注',0,null);
+            }
         }        
     },
 
@@ -1030,9 +1056,10 @@ cc.Class({
                     pos.y-=110;
                 break;
             }
-            this._cards[this._cp].tag=s;
+            //cc.log(this._cards[this._cp].seat);
+            this._cards[this._cp].seat=s;
             this._cards[this._cp++].emit('deal',{x:pos.x-22,y:pos.y,offx:-15,spf:spf1});
-            this._cards[this._cp].tag=s;
+            this._cards[this._cp].seat=s;
             this._cards[this._cp++].emit('deal',{x:pos.x+22,y:pos.y,offx:15,spf:spf2});
             s++;
             if(s>4)s =1;
@@ -1082,7 +1109,7 @@ cc.Class({
         var p = (showcardseat-1)*2;
         var x =-15;
         for(let i= this._cp-8;i<this._cp;i++){
-            if(this._cards[i].tag == showcardseat){
+            if(this._cards[i].seat == showcardseat){
                 
                 this._cards[i].emit('show',{img:this.imgs[  this._playercards[p++] ],x:x});
                 x+=30;  
@@ -1094,7 +1121,7 @@ cc.Class({
             
             if(this._isfisher){//钓鱼者亮自己所在位的牌(默认1号位)
                 for(let i= this._cp-8;i<this._cp;i++){
-                    if(this._cards[i].tag == this._selfseat){
+                    if(this._cards[i].seat == this._selfseat){
                         this._cards[ i  ].emit('show',{img:this.imgs[  this._playercards[0 ] ],x:-15});
                         this._cards[ i+1  ].emit('show',{img:this.imgs[  this._playercards[1 ] ],x: 15});
                         break;
@@ -1268,10 +1295,16 @@ cc.Class({
         //         this.btndice.active = true;
         // else
         //     this._round=0;
-
+     
         var p = this._cp-8;
-        for(let i = 0;i<8;i++){
-             this._cards[p++].destroy();
+        for(let i = 0;i<8;i++){       
+           // cc.log('check card  '+ p);
+           if(cc.isValid(this._cards[p])){
+               this._cards[p].active =false;
+               this._cards[p].destroy();              
+               this._cards[p]=null;
+           }
+           p++;
         }
 
         for(let i = 0;i<4;i++){
@@ -1375,6 +1408,12 @@ cc.Class({
         }
     },  
 
+    //切换座位
+    Btn_SwitchSeat:function(){
+        //5017
+      //  global.socket.SendMsg(5017);
+    },
+
     Btn_PlayerList:function(){
         if(this._poplist) return;
         this._poplist = true;
@@ -1382,7 +1421,11 @@ cc.Class({
     },
 
     Btn_Exit:function(){
-        global.PopWinTip(1,'确定要退出吗？',this.ExitGame );       
+        if(this._status =='')
+        global.PopWinTip(1,'确定要退出吗？',this.ExitGame ); 
+    else
+        global.PopWinTip(1,'游戏已开始，现在退出会严重影响其他玩家的游戏体验，确定要退出吗？',this.ExitGame ); 
+    
     },
 
     Btn_Dice:function(){
@@ -1403,7 +1446,10 @@ cc.Class({
     },
 
     Event_Back:function(){
-         global.PopWinTip(1,'确定要退出吗？',this.ExitGame ); 
+        if(this._status =='')
+            global.PopWinTip(1,'确定要退出吗？',this.ExitGame ); 
+        else
+            global.PopWinTip(1,'游戏已开始，现在退出会严重影响其他玩家的游戏体验，确定要退出吗？',this.ExitGame ); 
     },
 
     ExitGame:function(){      

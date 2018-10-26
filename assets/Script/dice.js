@@ -10,13 +10,13 @@ cc.Class({
     // use this for initialization
     onLoad: function () {
         this.node.on('roll',function(event){
-            this._pos = event.detail.pos;
-            this.node.x = event.detail.x;
-            this.node.y = event.detail.y;
+            this._pos = event.pos;
+            this.node.x = event.x;
+            this.node.y = event.y;
             //this.node.runAction(  cc.moveBy(1,-300,-100)); 
-            if(event.detail.id==1)
+            if(event.id==1)
                 this.node.runAction(  cc.moveTo(1,-30,30));   
-            if(event.detail.id==2)
+            if(event.id==2)
                 this.node.runAction(  cc.moveTo(1,30,-30));   
             this.node.getComponent(cc.Animation).play();       
 

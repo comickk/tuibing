@@ -16,16 +16,16 @@ cc.Class({
 
     SetPlayerInfo:function(event){
         //cc.log(event.detail);
-        this.nick.string = event.detail.nick;
-        this.score.string = event.detail.score;
+        this.nick.string = event.nick;
+        this.score.string = event.score;
 
 
-        if(event.detail.head != null)
-            this.head.spriteFrame = event.detail.head;
+        if(event.head != null)
+            this.head.spriteFrame = event.head;
          //头像
-        //  if(this._headimg == null && event.detail.head !== null){
+        //  if(this._headimg == null && event.head !== null){
         //     this.head.node.active = true;
-        //     var headurl = "http://"+ require('Global').socket.URL+"/client/user/avatar?id="+event.detail.head;
+        //     var headurl = "http://"+ require('Global').socket.URL+"/client/user/avatar?id="+event.head;
 
         //     var that = this;            
            

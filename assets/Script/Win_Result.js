@@ -16,8 +16,8 @@ cc.Class({
     },   
 
     SetScore:function(event){
-        var score = event.detail.score;
-        var timelen = event.detail.len;
+        var score = event.score;
+        var timelen = event.len;
         for(let i=0;i<score.length;i++){         
             var line = cc.instantiate(this.resultline);
             line.parent = this.layout;

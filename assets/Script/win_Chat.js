@@ -18,7 +18,7 @@ cc.Class({
     },
 
     AddChatLine:function(event){
-        var msg = event.detail.msg;
+        var msg = event.msg;
 
         this.chat.string += msg+ '\r\n';
 

@@ -1,3 +1,5 @@
+
+var global = require('Global'); 
 cc.Class({
     extends: require("PopWin"),
 
@@ -7,6 +9,9 @@ cc.Class({
         roundmark:cc.Node,
         fund:cc.EditBox,//组局基金
         fund_tip:cc.Node,
+
+        daikai:cc.Toggle,//代开开关
+        _daikai:false,
 
         _membernum:4,//会员人数
         _maxround:1,//最大圈数
@@ -20,7 +25,10 @@ cc.Class({
 
     onEnable:function(){
         this._super();
-        var nick = require('Global').selfinfo.nickname;
+        var nick ='';       
+       
+        if(global.selfinfo != null)
+            nick = global.selfinfo.nickname;
         
         if(nick.length >7)
             nick = nick.slice(0,7);
@@ -29,6 +37,10 @@ cc.Class({
         this.maxmember.string = '';
         this.maxmember.string = this._membernum;
         this.fund.string = '';
+
+        //如果是会员，开启代开功能
+        //if()
+        //    this.daikai.active = true;
     },
 
     Btn_Round:function(event,customEventData){
@@ -63,6 +75,14 @@ cc.Class({
               fund: Number(this.fund.string),  // 组局基金
         });          
 
-        require('Global').socket.SendMsg(3001,data);        
+        if(this._daikai)
+            require('Global').socket.SendMsg(3009,data); 
+        else
+            require('Global').socket.SendMsg(3001,data);      
+        
+    },
+
+    IsDaiKai:function(){
+        this._daikai = !this._daikai;
     },
 });

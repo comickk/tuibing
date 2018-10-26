@@ -24,7 +24,7 @@ cc.Class({
     },
 
     SetResult:function(event){
-        var data = event.detail.data;
+        var data = event.data;
 
         for(let i in data){
             var p = cc.instantiate(this.line);            

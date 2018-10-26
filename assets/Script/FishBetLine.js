@@ -14,16 +14,18 @@ cc.Class({
         _myseat:0,
         
 
-        _bankerbet:0,          
+        _bankerbet:0,  
+        _minbet:0,        
     },
    
     onLoad: function () {
         
         this.node.on('setfisherbet',function(event){
 
-            var msg = event.detail;
+            var msg = event;
 
             this._bankerbet = msg.bankerbet;
+            this._minbet = msg.minbet;
 
             this.nick.string = msg.nick;
             
@@ -37,6 +39,8 @@ cc.Class({
                 case 3:this.direct.string = '北';break;
                 case 4:this.direct.string = '东';break;
             }
+
+            this.betnum.string ='0';
 
         },this);    
     },
@@ -54,7 +58,10 @@ cc.Class({
 
     SetBetNum:function(){     
         
-        this._mybet = 100 * Math.round(this._bankerbet/100*this.betslider.progress);       
+        this._mybet = 10 * Math.round(this._bankerbet/10*this.betslider.progress);    
+        
+        this._mybet = this._mybet <  this._minbet?this._minbet:this._mybet;
+        
         this.betnum.string =this._mybet;
 
         if(this._mybet > this._bankerbet){

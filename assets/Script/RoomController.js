@@ -15,6 +15,10 @@ cc.Class({
         win_life:cc.Node,
         win_member:cc.Node,
 
+        win_shop:cc.Node,
+
+        win_help:cc.Node,
+
         loadscene:cc.Node,
 
         loadprog:cc.ProgressBar,
@@ -26,13 +30,23 @@ cc.Class({
         this.popbg.on('touchend',function(){event.stopPropagation();});  
         this.loadscene.on('touchend',function(){event.stopPropagation();});  
 
-        global.socket.controller = this;
-        
-        this.playernick.string = global.selfinfo.nickname;
-        this.playergold.string = global.selfinfo.gold_count;
+        this.node.on('event_iap',this.IapEvent,this);  
 
-        if(global.selfinfo.headimg!= null)
-            this.playerhead.spriteFrame = global.selfinfo.headimg;
+        if(cc.isValid(global.anysdk))
+            global.anysdk.controller = this.node;
+
+        if(cc.isValid(global.socket))
+            global.socket.controller = this;
+        
+        if(cc.isValid(global.selfinfo)){
+            this.playernick.string = global.selfinfo.nickname;
+            this.playergold.string = global.selfinfo.gold_count;
+            if(global.selfinfo.headimg!= null)
+                this.playerhead.spriteFrame = global.selfinfo.headimg;
+        }       
+
+        if( cc.isValid (JSON.parse(cc.sys.localStorage.getItem('showhelp'))) )
+            this.win_help.active = false; 
     },
 
     Btn_Back:function(){
@@ -78,11 +92,12 @@ cc.Class({
     },   
 
     Btn_Shop:function(){
-        global.PopWinTip(2,'暂未开放，敬请期待');  
+        //global.PopWinTip(2,'暂未开放，敬请期待');  
+        this.win_shop.active = true;   
     },
 
     MsgHandle:function(data){
-        cc.log(data);
+       // cc.log(data);
         if(data[4]!=null) {
             //错误处理
             switch(data[4]){
@@ -99,7 +114,9 @@ cc.Class({
             if(data[1]==null ){
                // this.ErrorTip(data[4]);
             }else{
+                //cc.log(data);
                 global.GetRoomInfo(data[1][0]);
+                //global.GetRoomInfo(data[3][0]);
                 global.playerinfo =new Array();               
                 global.playerinfo.push( global.GetPlayerInfo(data[1][1]));
                 
@@ -138,6 +155,16 @@ cc.Class({
             break;
 
             case 3006:
+            break;
+
+            case 3010://代开模式
+                this.win_create.active =false;
+
+                if(data[1]==null ){
+                    this.ErrorTip(data[4]);
+                }else{
+                    global.PopWinTip(2,'房间已创建,密码'+ data[1][0]);
+                }
             break;
         
             default:           
@@ -198,4 +225,47 @@ cc.Class({
        
         global.PopWinTip(2,msg);         
     },
+
+    //购买元宝
+    Btn_PayProduct:function(event,customEventData){
+        if(!cc.isValid(global.anysdk)){
+            global.PopWinTip(2,'目前无法使用支付系统');
+            return;
+        }
+        
+        //global.anysdk.payForProduct(customEventData+'','gold','0.01',global.selfinfo.id+'',global.selfinfo.nickname+'','0');        
+        
+    },  
+    //支付事件
+    IapEvent:function(event){
+        var msg = event;
+        switch(msg.type){
+            case 'pay'://支付一个商品
+            //this.testlabel.string = '---'+ msg.goods_id+'---'+ msg.goods_name+'---'+ msg.goods_price+'---'+ msg.user_id+'---'+ msg.user_nick+'---'+ msg.user_gold+'---'+ msg.user_vip;
+            break;
+
+            case 'kPaySuccess'://支付成功  //进入等待服务器确认支付
+                this.win_shop.active = false;               
+                global.PopWinTip(2,'支付成功,正在等待服务器发放商品...');
+                //超时处理
+            break;
+             case 'kPayFail1':
+                this.win_tip.active = true;
+                global.PopWinTip(2,'支付失败');
+            break;
+            case 'kPayFail2':
+                this.win_tip.active = true;
+                global.PopWinTip(2,'支付系统网络异常,请稍侯再试');
+            break;
+            case 'kPayFail3':
+                this.win_tip.active = true;
+                global.PopWinTip(2,'购买的商品信息可能已下架或信息不完整,请购买其它商品');
+            break;
+            case  'kPayNowPaying'://支付进行中
+                this.win_tip.active = true;
+                global.PopWinTip(2,'一个已启用的支付订单正在处理中');
+            break;
+        }
+    },
+
 });

@@ -16,7 +16,7 @@ cc.Class({
 
     SetResult:function(event){
        // cc.log(event.detail);
-        var score = event.detail.score;
+        var score = event.score;
         this.nick.string = score.nick;
        
         this.score.string = score.score_count;

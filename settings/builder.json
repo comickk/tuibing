@@ -1,13 +1,15 @@
 {
   "appKey": "D3246CAC-A4D9-1FF4-3C3F-40CEDBE886A9",
   "appSecret": "d39df56f9bd69743c85f818446081249",
+  "encryptJs": true,
   "excludeScenes": [],
-  "includeAnySDK": true,
-  "includeSdk": [
-    "anysdk"
-  ],
+  "fb-instant-games": {},
+  "includeAnySDK": false,
+  "includeSDKBox": false,
   "inlineSpriteFrames": true,
   "inlineSpriteFrames_native": true,
+  "jailbreakPlatform": false,
+  "md5Cache": false,
   "mergeStartScene": false,
   "oauthLoginServer": "http://118.190.149.221/client/user/da426e6076be11e71d1a29fa785dd421",
   "optimizeHotUpdate": true,
@@ -19,8 +21,20 @@
   },
   "packageName": "com.raylight.tuibing",
   "privateKey": "2A6807F790C944A3DE7789D5CA8EE6D0",
-  "renderMode": "0",
+  "qqplay": {
+    "REMOTE_SERVER_ROOT": "",
+    "orientation": "portrait"
+  },
   "startScene": "f630377b-14eb-4b25-a8bb-f1a7bed0f81b",
   "title": "tuibing",
-  "webOrientation": "auto"
+  "webOrientation": "landscape",
+  "wechatgame": {
+    "REMOTE_SERVER_ROOT": "",
+    "appid": "wx6ac3f5090a6b99c5",
+    "isSubdomain": false,
+    "orientation": "portrait",
+    "subContext": ""
+  },
+  "xxteaKey": "54e362a0-829c-4c",
+  "zipCompressJs": true
 }

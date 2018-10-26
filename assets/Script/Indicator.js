@@ -18,22 +18,22 @@ cc.Class({
 
         //初始化方位
         this.node.on('initseat',function(event){
-            var seat = event.detail.seat;
+            var seat = event.seat;
             this.bg.rotation = -(seat-1)*90;
         },this);
 
         this.node.on('setindicator',function(event){           
 
-            if( cc.isValid(event.detail.tip))
-                this.tip.string = event.detail.tip;
+            if( cc.isValid(event.tip))
+                this.tip.string = event.tip;
 
-            if( cc.isValid(event.detail.num)){
-                this._timelen = event.detail.num;
+            if( cc.isValid(event.num)){
+                this._timelen = event.num;
                 this.schedule( function(){ this.Timer() },1,this._timelen,0);
             }
 
-            if( cc.isValid(event.detail.seat)){
-                this._seat = event.detail.seat;
+            if( cc.isValid(event.seat)){
+                this._seat = event.seat;
                 if(this._seat <1){
                     this.direct[1].opacity =255;
                     this.direct[2].opacity =255;
@@ -48,8 +48,8 @@ cc.Class({
                 }
             }
 
-            if( cc.isValid(event.detail.callback))
-                this._callback = event.detail.callback;  
+            if( cc.isValid(event.callback))
+                this._callback = event.callback;  
 
         },this);
 

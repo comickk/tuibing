@@ -39,7 +39,7 @@ cc.Class({
     UpdatePlayer:function(event){
         
        // cc.log(event.detail);
-        var data =event.detail.data;
+        var data =event.data;
         //clear
         if(this.playerlist.childrenCount >0){
             //var list =this.playerlist.children;

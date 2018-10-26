@@ -12,10 +12,11 @@ cc.Class({
     onLoad: function () {
         this.node.on('setfisherbet',function(event){
 
-            var bankerbet = event.detail.bankerbet;
-            var bankerseat = event.detail.bankerseat;
+            var bankerbet = event.bankerbet;
+            var minbet = event.minbet;
+            var bankerseat = event.bankerseat;
 
-            var timelen = event.detail.len;
+            var timelen = event.dail.len;
 
             var fisherbet = this.layout.children;
             var j=0;
@@ -25,6 +26,7 @@ cc.Class({
                 if(global.playerinfo[i].seat >0 && global.playerinfo[i].seat <5){    
 
                     fisherbet[j].emit('setfisherbet',{  bankerbet:bankerbet,
+                                                        minbet:minbet,
                                                         nick:global.playerinfo[i].nick,
                                                         seat:global.playerinfo[i].seat,
                                                         head:global.playerinfo[i].headimg});

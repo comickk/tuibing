@@ -8,6 +8,8 @@ cc.Class({
        betnum:cc.Label,
        fisher_betnum:cc.Label,
 
+        offline:cc.Node,
+
        _headimg:cc.SpriteFrame,
        _seat:1,    
        _betstr:'',   
@@ -76,7 +78,7 @@ cc.Class({
     },
     SetPlayerInfo:function(event){       
        
-        var msg = event.detail;
+        var msg = event;
         
         this.nick.string = msg.nick;
         this.score.string = msg.score;
@@ -90,6 +92,9 @@ cc.Class({
         if(msg.head !== null){             
             this.head.spriteFrame = msg.head;
         }
+
+        if(!msg.online && cc.isValid(this.offline))
+            this.offline.opacity = 255;
 
         // if(this._headimg == null && msg.head !== null){
         //     this.head.node.active = true;
@@ -125,7 +130,7 @@ cc.Class({
     BankerBet:function(event){
         this._betstr = '锅底:';
         //this.betnum.node.active = true;
-        this.betnum.string = this._betstr + Number(event.detail.num-0);
+        this.betnum.string = this._betstr + Number(event.num-0);
     },
     ClearBet:function(){
         //this.betnum.node.active = false;

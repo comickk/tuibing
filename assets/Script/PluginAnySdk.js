@@ -32,6 +32,108 @@ PluginSdk.prototype.Init = function (controller) {
     //global.anysdk = this;
     //cc.game.addPersistRootNode(this.node);
 }
+
+//---------------------支付类-----------------------------------------
+//支付商品
+PluginSdk.prototype.payForProduct=function (id,name,price,userid,usernick,vip) {
+    if (!this.iapPlugin) {
+        console.log('no support anysdk');
+        //this.msg.string = '--------no support anysdk';
+         //this.log +='--------no support anysdk\n';
+        return;
+    }
+     //this.log +='--------start anysdk pay \n';
+    var info = {
+        'Product_Id': id,                    //商品唯一标示符
+        'Product_Name': name,               //商品名称
+        'Product_Price': price,                    //商品单价
+        'Product_Count': '1',                      //商品数量
+        'Product_Desc': name,            //商品描述 
+        'Coin_Name': '元宝',                      //虚拟币名称
+        'Coin_Rate': '1',                          //虚拟币兑换率
+        'Role_Id': userid,    //角色唯一标示符
+        'Role_Name': usernick,                      //角色名称
+        'Role_Grade': '1',                         //角色等级
+        'Role_Balance': 0,                        //虚拟币余额
+        'Vip_Level': vip,                          //VIP等级
+        'Party_Name': 'null',                      //工会名称
+        'Server_Id': '1',                          //服务器唯一标示符
+        'Server_Name': '1',                        //服务器名称
+        'EXT': 'tuibing'                     //扩展字段
+    };
+    this.iapPlugin.payForProduct(info);
+   // if(cc.isValid(this.controller))
+    //    this.controller.emit('event_iap',{ type:'pay',
+    //                                            goods_id:id,goods_name:name, goods_price:price,   
+    //                                            user_id:userid,  user_nick:usernick,user_gold:usergold, user_vip:vip});
+},
+   
+//获取订单号
+PluginSdk.prototype.getOrderId = function () {
+    if (!this.iapPlugin) {
+        // console.log();
+        return;
+    }
+    var orderId = this.iapPlugin.getOrderId();
+    // console.log();
+},
+
+//支付结果
+PluginSdk.prototype.onPayResult = function (code, msg) {
+    cc.log(' PAY RESULT ########## code: ' + code + ',msg: ' + msg);
+    switch (code) {
+        case anysdk.PayResultCode.kPaySuccess:// 支付系统支付成功
+            console.log(' kPaySuccess ');
+           // this.log +=' kPaySuccess \n';
+             if(cc.isValid(this.controller))
+                this.controller.emit('event_iap',{ type:'kPaySuccess',msg:'kPaySuccess'});
+            break;
+        case anysdk.PayResultCode.kPayCancel:// 支付系统支付取消
+            console.log(' kPayCancel ');
+            // this.log +=' kPayCancel \n';
+              if(cc.isValid(this.controller))
+                this.controller.emit('event_iap',{ type:'kPayCancel',msg:'kPayCancel'});
+            break;
+        case anysdk.PayResultCode.kPayFail:// 支付系统支付失败
+           // this.log +=' kPayFail1 '+ msg +' \n';
+             if(cc.isValid(this.controller))
+                this.controller.emit('event_iap',{ type:'kPayFail1',msg:msg});
+            break;
+        case anysdk.PayResultCode.kPayNetworkError:// 支付系统网络错误
+           // this.log +=' kPayFail2 '+ msg +'\n';
+            if(cc.isValid(this.controller))
+                this.controller.emit('event_iap',{ type:'kPayFail2',msg:msg});
+            break;
+        case anysdk.PayResultCode.kPayProductionInforIncomplete:// 支付系统支付信息不完整
+            console.log(' kPayFail ');
+           // this.log +=' kPayFail3'+ msg +'\n';
+             if(cc.isValid(this.controller))
+                this.controller.emit('event_iap',{ type:'kPayFail3',msg:msg});
+            break;
+        case anysdk.PayResultCode.kPayInitSuccess:// 支付系统初始化成功
+            console.log(' kPayInitSuccess ');
+           // this.log +=' kPayInitSuccess \n';
+             if(cc.isValid(this.controller))
+                this.controller.emit('event_iap',{ type:'kPayInitSuccess',msg:'kPayInitSuccess'});
+            break;
+        case anysdk.PayResultCode.kPayInitFail:// 支付系统初始化失败
+            console.log(' kPayInitFail ');
+            // this.log +=' kPayInitFail \n';
+              if(cc.isValid(this.controller))
+                this.controller.emit('event_iap',{ type:'kPayInitFail',msg:'kPayInitFail'});
+            break;
+        case anysdk.PayResultCode.kPayNowPaying:// 支付系统正在支付中
+            console.log(' kPayNowPaying ');
+          //  this.log +=' kPayNowPaying \n';
+            this.iapPlugin.resetPayState();
+            if(cc.isValid(this.controller))
+                this.controller.emit('event_iap',{ type:'kPayNowPaying',msg:'kPayNowPaying'});
+            break;
+        default:
+            break;
+    }
+}
+
 //--------------登录类----------------------------------------------
 PluginSdk.prototype.login = function () {
     if (!this.userPlugin) {

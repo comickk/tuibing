@@ -17,9 +17,9 @@ cc.Class({
             var nick ='';
             var seat =1;
 
-            msg =event.detail.msg;
-            nick = event.detail.nick;
-            seat = event.detail.seat;
+            msg =event.msg;
+            nick = event.nick;
+            seat = event.seat;
 
             this.win_chat.emit('chat',{msg:nick+':'+msg});
 

@@ -11,11 +11,15 @@ cc.Class({
 
     properties: {
 
-        bgm:[cc.AudioClip],
+        bgm:{
+            type:cc.AudioClip,
+            default:[]
+        },
 
-        sound:[cc.AudioClip],//
-        
-        
+        sound:{
+            type:cc.AudioClip,
+            default:[]
+        },    
     },
 
     // use this for initialization

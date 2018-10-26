@@ -1,7 +1,7 @@
 var Global = function(){  
 
 }
-    Global.prototype.ver =105;
+    Global.prototype.ver =107;
     //  玩家数据类  
     Global.prototype.selfinfo = null;
     Global.prototype.roominfo = null;
@@ -55,10 +55,11 @@ var Global = function(){
         player.bet=[0,0,0,0,0];
 
         player.headimg = null;
+        player.online = true;
 
         //cc.log(player.headurl);
         if(player.headurl !== null)
-            this.GetPlayerHeadImg(player); 
+            this.downloadHeadImg(player); 
         
         return player;
     }
@@ -81,6 +82,10 @@ var Global = function(){
     }
 
     Global.prototype.GetPlayerHeadImg = function(player){
+
+    }
+    
+    Global.prototype.downloadHeadImg = function(player){
 
         var id = player.id;
         var self = this;

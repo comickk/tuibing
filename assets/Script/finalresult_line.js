@@ -15,7 +15,7 @@ cc.Class({
 
         this.node.on('setinfo',function(event){
             
-            var data = event.detail.data;
+            var data = event.data;
             
             //cc.log(data);
             if(data.id.length<28){

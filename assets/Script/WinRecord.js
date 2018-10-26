@@ -19,11 +19,11 @@ cc.Class({
     onLoad: function () {
         this._super();
         this._gw = this.graphics.node.width-10;
-        this._gh = this.graphics.node.height-10;        
+        this._gh = this.graphics.node.height-10;      
 
         var record = JSON.parse(cc.sys.localStorage.getItem('record'));
         //cc.log(record);       
-
+       
         if(cc.isValid(record)){
             this._myrecord =[];//生成图表原数据
             //画战绩记录
@@ -32,32 +32,30 @@ cc.Class({
             //this._myrecord.push(rd);
 
             for(let i in record){
-                if( !cc.isValid(rd)){
+
+                if( !cc.isValid(rd)){//没有可用记录 则创建
                     rd = {date:record[i][0],score:record[i][  record[i].length-1    ]-0};
-                    this._myrecord.push(rd);
+                    this._myrecord.push(rd);                    
                 }else{
-                   
-                    if(rd.date !== record[i][0]){  //是否为同一天
+                   //有可用记录，比较是否为同一天
+                    if(rd.date !== record[i][0]){  //不为同一天则新建一条记录
                         rd = {date:record[i][0],score:record[i][  record[i].length-1    ]-0};
-                        this._myrecord.push(rd);
-                        rd =null;                        
+                        this._myrecord.push(rd);                        
+                        //rd =null;                        
                     }
-                    else
+                    else //同一天将分数相加
                         rd.score += record[i][ record[i].length-1  ]-0;
                 }    
 
                 var line = new cc.instantiate(this.recordline);
                 line.parent = this.recordlist;
                 line.setPosition(0,0);
-                line.emit('setrecord',{data:record[i]});                
+                line.emit('setrecord',{data:record[i]});  
+               
             }
-
            // cc.log(this._myrecord);
-            
             this.DrawRecord();
-        };
-
-              
+        };              
     },
 
     //绘制记录图表
@@ -82,7 +80,8 @@ cc.Class({
         //画中间线---------
          this.graphics.moveTo(0,mid);
          this.graphics.lineTo(this._gw,mid);
-         this.graphics.strokeColor = cc.hexToColor('#A5A5A5');
+         var color = cc.Color.BLACK;
+         this.graphics.strokeColor = color.fromHEX('#A5A5A5');
          this.graphics.stroke();         
              
 
@@ -99,9 +98,11 @@ cc.Class({
 
          for(let j=0;j<30;j++){
             if(cc.isValid(this._myrecord[i])){              
+               // cc.log(this._myrecord[i].date);                
+               // cc.log('date = '+ date);
 
-                if(this._myrecord[i].date == date){
-                
+                if(this._myrecord[i].date == date+''){                  
+                    
                     if(this._myrecord[i].score-0 >0 ){
                         this.graphics.rect( this._gw-this._gw/30*(j+1),mid,15,this.Lerp(max,min,this._myrecord[i].score-0)*this._gh-mid);
                         this.graphics.fillColor= cc.Color.RED;

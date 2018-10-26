@@ -18,7 +18,7 @@ cc.Class({
         
         //line   2017-8-19  id1  id2  id3   id4  id5   ……………………  1000
        // cc.log(event.detail);
-        var data= event.detail.data;
+        var data= event.data;
         
         //写时间
         this.time.string = data[0];

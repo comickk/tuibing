@@ -17,10 +17,10 @@ cc.Class({
 
         this.nick.string = global.selfinfo.nickname;
         this.gold.string = global.selfinfo.gold_count;
-        this.username.string = '玩家账号('+global.selfinfo.user_name+')';
+        this.username.string = '玩家账号('+global.selfinfo.user_code+')';
 
         if(global.selfinfo.headimg!= null)
-            this.head.spriteFrame =global.selfinfo.headimg;
+            this.head.spriteFrame =global.selfinfo.headimg; 
     },
 
     Tog_music:function(){
@@ -41,15 +41,11 @@ cc.Class({
     },
 
     Btn_KeFu:function(){
-
+        cc.sys.openURL('http://'+global.socket.URL+'/help');
     },
 
-    Btn_LunTan:function(){
-
-    },
-
-    Btn_FanKui:function(){
-
-    }
+    Btn_JuLeBu:function(){
+        cc.sys.openURL('http://'+global.socket.URL+'/club');
+    },   
 
 });
